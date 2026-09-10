@@ -395,6 +395,11 @@ Choose the right framework for your use case with this production-focused compar
   - Managed document intelligence platform for parsing, extracting, and
     classifying complex PDFs, spreadsheets, and office files into structured
     outputs for RAG ingestion.
+- [Scrapiq](https://github.com/NG-PR0JECT/scrapiq)
+  <!-- verified: 2026-09-10 -->
+  - MIT-licensed extraction API that turns any URL into clean JSON, text, or
+    markdown in one deterministic call with no LLM in the loop, giving ingestion
+    pipelines a self-hostable fetch layer that returns the same text on every run.
 - [Semark](https://github.com/KingsleyOWO/Semark)
   <!-- verified: 2026-07-24 -->
   - An Apache-2.0 document-processing pipeline that combines MinerU evidence
