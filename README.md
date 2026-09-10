@@ -494,6 +494,7 @@ training from scratch. See also: [rag-pitfalls.md — Embedding Model Selection]
 | Tool | Best For | Key Strength | Evidence |
 | :--- | :--- | :--- | :--- |
 | [Chroma](https://github.com/chroma-core/chroma) | Local/Dev & Mid-scale | Developer-friendly, open-source embedding database. | — |
+| [Infino](https://github.com/infino-ai/infino) | Unified search + vector + SQL | Embedded engine running BM25 full-text, vector, hybrid (RRF), and SQL over one copy of your data as Apache Parquet on object storage; no separate search cluster. | — |
 | [LanceDB](https://github.com/lancedb/lancedb) | Serverless & multimodal | Embedded, serverless vector DB with native multimodal support; no separate server required. | — |
 | [Milvus](https://github.com/milvus-io/milvus) | Billions of vectors | Most popular OSS for massive scale. | [\[V\]](benchmarks.md#1-vector-databases) |
 | [Omnigraph](https://github.com/ModernRelay/omnigraph) | Graph + vector + BM25 hybrid | Typed graph database where agents branch and merge like Git; S3-native, Rust, with traversal + vector + BM25 in one runtime. | — |
