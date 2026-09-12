@@ -332,6 +332,12 @@ Choose the right framework for your use case with this production-focused compar
   - A high-performance data processing framework for live data. It enables
     "Always-Live" RAG by syncing vector indices in real-time as the underlying
     data source changes, without full re-indexing.
+- [PipesHub](https://github.com/pipeshub-ai/pipeshub-ai)
+  <!-- verified: 2026-09-11 -->
+  - Production context layer for permission-aware RAG: 50+ enterprise
+    connectors, knowledge-graph plus vector retrieval, citations, MCP, and
+    APIs/SDKs so engineering teams can search and build agents on governed
+    workplace data.
 - [R2R](https://github.com/SciPhi-AI/R2R)
   <!-- verified: 2026-08-21 -->
   - An agentic retrieval system with a RESTful API, multimodal ingestion, hybrid
