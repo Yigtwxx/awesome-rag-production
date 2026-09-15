@@ -849,6 +849,12 @@ distinct from the RAG knowledge base itself.
 
 ### Frameworks & Tools
 
+- [GoodMem](https://docs.goodmem.ai/)
+  <!-- verified: 2026-09-14 -->
+  - Self-hostable memory service for AI agents with server-side chunking,
+    embeddings, semantic retrieval, and optional reranking. Shared memory
+    spaces and scoped API keys support memory across agents and sessions;
+    a managed cloud service is also available.
 - [LangMem](https://github.com/langchain-ai/langmem)
   - LangChain's native memory SDK for building agents with persistent, long-term
     memory. Integrates directly with LangGraph state and LangSmith tracing,
