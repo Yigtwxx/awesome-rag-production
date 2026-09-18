@@ -1061,6 +1061,11 @@ Groundedness, and Answer Relevance.
     retrieved context, then escalating only the survivors to a burden-of-proof
     judge. Framework-agnostic, so it drops in front of an existing pipeline
     rather than replacing its evaluator.
+- [Evalgate](https://github.com/AgentPostmortem/Evalgate)
+  - Declarative prompt/agent regression CI: versioned suites with exact-match,
+    LLM-as-judge, and latency/cost scorers, baseline quality deltas posted as
+    PR comments, and the build fails when scores drop. Runs offline with a
+    deterministic mock provider.
 
 ### LLM-as-Judge Evaluation
 
