@@ -1274,6 +1274,9 @@ different bottleneck — deploying them in combination yields compounding return
 
 ## Security & Compliance
 
+- [Answerproof](https://github.com/AgentPostmortem/Answerproof)
+  <!-- verified: 2026-09-18 -->
+  - Tamper-evident receipts for RAG answers via Merkle proofs and Ed25519 signatures.
 - [Lakera Guard](https://www.lakera.ai/)
   - A low-latency security API that protects applications against prompt
     injections, data leakage, and toxic content in real-time. It acts as an
