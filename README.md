@@ -660,6 +660,10 @@ zero-shot retrieval performance.
     superior retrieval quality compared to standard single-vector dense
     retrieval. Upstream has been quiet since mid-2025 — pin your version and
     check compatibility before adopting it in a new pipeline.
+- [Tenantq](https://github.com/AgentPostmortem/Tenantq)
+  - Multi-tenant hybrid-search reference on Qdrant: tenant-isolated retrieval
+    with dense+sparse RRF fusion, HNSW tuning, Recall@K/p95 benchmarks, batch
+    ingestion, and Docker + Prometheus.
 
 **GraphRAG:**
 
