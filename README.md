@@ -1294,6 +1294,9 @@ different bottleneck — deploying them in combination yields compounding return
   - A production-ready project that allows you to run RAG pipelines completely
     offline. It ensures full data privacy by keeping all ingestion and inference
     local, perfect for highly regulated industries.
+- [VaultRAG](https://github.com/AgentPostmortem/VaultRAG)
+  <!-- verified: 2026-09-18 -->
+  - Permission-aware RAG with access control enforced inside the retrieval query.
 
 ## LLM Gateways & Routing
 
