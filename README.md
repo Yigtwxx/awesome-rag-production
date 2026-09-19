@@ -1208,6 +1208,7 @@ different bottleneck — deploying them in combination yields compounding return
 | Tool | Cache Type | Layer | Backend | Best For | Evidence |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | [Anthropic Prompt Caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) | Prompt prefix | Provider | Anthropic infra | Long system prompts, large contexts | [\[V\]](benchmarks.md#4-caching-prompt--semantic) |
+| [CacheVerifier](https://www.cacheverifier.com) | Verification of semantic-cache hits | Application | Hosted REST API | Catching wrong reuse in a similarity cache's gray zone | — |
 | [GPTCache](https://github.com/zilliztech/GPTCache) | Exact + Semantic | Application | Redis / Milvus / SQLite | Reducing duplicate LLM calls | — |
 | [LangChain Cache](https://python.langchain.com/docs/integrations/llm_caching/) | Exact + Semantic | Application | In-memory / Redis / SQLite | LangChain-native pipelines | — |
 | [LiteLLM Cache](https://docs.litellm.ai/docs/proxy/caching) | Exact + Semantic | Gateway | Redis / S3 / Disk | Multi-provider routing with cache | — |
@@ -1225,6 +1226,9 @@ different bottleneck — deploying them in combination yields compounding return
     Add a `cache_control` breakpoint in the API request — no infrastructure
     changes required. Cache writes carry a premium, so the break-even point is
     the second read on a 5-minute TTL and the third on a 1-hour TTL.
+- [CacheVerifier](https://www.cacheverifier.com)
+  <!-- verified: 2026-09-19 -->
+  - Checks the gray-zone hits of a semantic cache (GPTCache, Redis, LangChain) with a cross-encoder before they are served, as a hosted REST API with a Python client and an offline health check. Useful when a wrong reused answer costs more than an extra model call.
 - [GPTCache](https://github.com/zilliztech/GPTCache)
   <!-- verified: 2026-08-21 -->
   - A widely referenced open-source semantic cache for LLM applications. It
