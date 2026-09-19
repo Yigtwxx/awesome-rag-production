@@ -1228,7 +1228,9 @@ different bottleneck — deploying them in combination yields compounding return
     the second read on a 5-minute TTL and the third on a 1-hour TTL.
 - [CacheVerifier](https://www.cacheverifier.com)
   <!-- verified: 2026-09-19 -->
-  - Checks the gray-zone hits of a semantic cache (GPTCache, Redis, LangChain) with a cross-encoder before they are served, as a hosted REST API with a Python client and an offline health check. Useful when a wrong reused answer costs more than an extra model call.
+  - Checks the gray-zone hits of a semantic cache (GPTCache, Redis, LangChain) with a
+    cross-encoder before they are served, as a hosted REST API with a Python client and an
+    offline health check. Useful when a wrong reused answer costs more than an extra model call.
 - [GPTCache](https://github.com/zilliztech/GPTCache)
   <!-- verified: 2026-08-21 -->
   - A widely referenced open-source semantic cache for LLM applications. It
