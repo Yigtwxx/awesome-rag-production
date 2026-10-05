@@ -1,4 +1,4 @@
 # HTTP requests for web scraping
 requests>=2.31.0
 # Retry logic (bundled with requests but pinned for explicitness)
-urllib3>=2.0.0
+urllib3>=2.8.0
