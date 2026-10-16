@@ -390,6 +390,12 @@ Choose the right framework for your use case with this production-focused compar
     data across 100+ languages. Its PP-StructureV3 pipeline recovers tables,
     formulas, and reading order, providing a self-hostable parsing layer for
     document-heavy RAG ingestion.
+- [PDFtoMarkdown.ai](https://pdftomarkdown.ai/)
+  <!-- verified: 2026-10-16 -->
+  - Hosted converter that turns PDFs, Office files, images, HTML, and EPUB into
+    structured Markdown with headings, tables, and optional OCR for scanned
+    pages, available as a web app, a REST API, or an MIT-licensed MCP server,
+    with pay-per-page credits instead of a subscription.
 - [Reducto](https://reducto.ai/)
   <!-- verified: 2026-07-30 -->
   - Managed document intelligence platform for parsing, extracting, and
