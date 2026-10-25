@@ -351,6 +351,12 @@ Choose the right framework for your use case with this production-focused compar
 
 ## Data Ingestion & Parsing
 
+- [Cognipeer to-markdown](https://github.com/Cognipeer/to-markdown)
+  <!-- verified: 2026-10-25 -->
+  - MIT-licensed TypeScript library that converts PDF, DOCX, DOC, XLSX, PPTX,
+    HTML, EPUB, and Jupyter notebooks to Markdown for RAG ingestion, with optional
+    OCR for scanned PDFs and images through Tesseract or a vision model, running
+    in Node without a Python service.
 - [Crawl4AI](https://github.com/unclecode/crawl4ai)
   - An open-source web crawler purpose-built for LLM pipelines. Converts web
     pages into clean, structured markdown or JSON ready for ingestion — with
