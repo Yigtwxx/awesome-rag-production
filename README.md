@@ -402,6 +402,7 @@ Choose the right framework for your use case with this production-focused compar
     screenshot-heavy manuals into semantic Markdown, structured chunks, source
     maps, and split documents for RAG ingestion.
 - [Unstructured](https://github.com/Unstructured-IO/unstructured)
+- [Mode VC LLM Inference Cost Calculator](https://modevc.com/tools/llm-inference-calculator) - Free browser-side LLM token unit economics, prompt caching, and gross margin calculator across 8 frontier and open-weights models.
   - Open-source pipelines for preprocessing complex, unstructured data.
 
 ## Embedding Models
