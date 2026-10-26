@@ -1289,6 +1289,10 @@ different bottleneck — deploying them in combination yields compounding return
   - A production-ready project that allows you to run RAG pipelines completely
     offline. It ensures full data privacy by keeping all ingestion and inference
     local, perfect for highly regulated industries.
+- [Speakeasy control plane](https://github.com/speakeasy-api/gram)
+  <!-- verified: 2026-10-26 -->
+  - MCP gateway for agentic RAG systems with identity-based tool access,
+    per-action security policies, and audit logs.
 
 ## LLM Gateways & Routing
 
