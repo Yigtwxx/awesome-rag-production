@@ -364,6 +364,11 @@ Choose the right framework for your use case with this production-focused compar
     frameworks.
 - [Firecrawl](https://github.com/firecrawl/firecrawl)
   - Effortlessly turn websites into clean, LLM-ready markdown.
+- [Keenable](https://github.com/keenableai/keenable-mcp)
+  <!-- verified: 2026-11-03 -->
+  - Managed web search and page-fetch API for agents and RAG ingestion. Returns
+    ranked results and page content as clean markdown over HTTP, SDKs, or a
+    hosted MCP server, with a keyless public tier for evaluation.
 - [LlamaParse](https://github.com/run-llama/llama_cloud_services)
   - Specialized parsing for complex PDFs with table extraction capabilities.
 - [Marker](https://github.com/datalab-to/marker)
