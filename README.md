@@ -498,6 +498,7 @@ training from scratch. See also: [rag-pitfalls.md — Embedding Model Selection]
 | [Qdrant](https://github.com/qdrant/qdrant) | <50M vectors | Best filtering support and free tier. | [\[V\]](benchmarks.md#1-vector-databases) [\[3P\]](benchmarks.md#1-vector-databases) |
 | [Vespa](https://github.com/vespa-engine/vespa) | Web-scale hybrid serving | Battle-tested engine combining vector, tensor, text, and structured data at serving time and any scale. | — |
 | [Weaviate](https://github.com/weaviate/weaviate) | Hybrid Search | Native integration of vector and keyword search. | — |
+| [XERJ](https://github.com/xerj-org/xerj) | Local search for agents | Single Rust binary with BM25, kNN vector, and hybrid retrieval over an Elasticsearch-compatible API; built-in embedder, no separate vector DB. | — |
 
 **Bottom line:** There is no single "best" vector DB — match it to your
 constraints. Use **pgvector** if you already run PostgreSQL, **Qdrant** for
