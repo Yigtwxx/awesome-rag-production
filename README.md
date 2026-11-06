@@ -691,6 +691,10 @@ are the main themes?") that standard vector search struggles to address.
   - An end-to-end application that extracts knowledge graphs from unstructured
     documents into Neo4j using LLMs. Provides a UI for exploring the resulting
     graph and integrates with LangChain's Neo4j vector + graph retrieval.
+- [HydraDB](https://github.com/hydra-db/hydradb)
+  <!-- verified: 2026-11-06 -->
+  - Scalable graph database on object storage with automated graph creation
+    for agent context and GraphRAG.
 
 **Context Compression:**
 
