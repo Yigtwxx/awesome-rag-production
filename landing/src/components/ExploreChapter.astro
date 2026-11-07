@@ -1,0 +1,79 @@
+---
+import { catalog } from '../lib/catalog';
+import { groupOf } from '../lib/groups';
+import { docsHref } from '../lib/site';
+
+const categories = catalog.categories.map((c) => {
+  const group = groupOf(c.name);
+  const names = c.tools.map((t) => t.name);
+  return {
+    ...c,
+    group,
+    shown: names.slice(0, 7).join(', '),
+    more: Math.max(0, names.length - 7),
+  };
+});
+const pad = (n: number): string => String(n).padStart(2, '0');
+---
+
+<section
+  class="chapter explore-chapter"
+  aria-labelledby="explore-chapter-title"
+>
+  <div class="container">
+    <header class="chapter__head">
+      <h2 id="explore-chapter-title" class="chapter__title">
+        Every category,
+        <span class="serif tone-sun">indexed.</span>
+      </h2>
+      <p class="chapter__lede">
+        All {categories.length} categories of the list in README order, with the
+        tools inside each. Open one to read the full entries, descriptions and
+        evidence.
+      </p>
+    </header>
+
+    <ol class="rows">
+      {categories.map((c, i) => (
+        <li>
+          <a class="row reveal" href={docsHref('', c.anchor)}>
+            <span class="row__num">{pad(i + 1)}</span>
+            <span class="row__title">
+              <span
+                class="swatch"
+                style={`background:${c.group.color};color:${c.group.color}`}
+              />
+              {c.name}
+              <small>{c.group.name} stage</small>
+            </span>
+            <span class="row__body">
+              {c.shown}
+              {c.more > 0 && (
+                <span class="explore-chapter__more"> and {c.more} more</span>
+              )}
+            </span>
+            <span class="row__aside">
+              {c.count}
+              <small>tools</small>
+            </span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .explore-chapter__more {
+    color: var(--ice);
+  }
+</style>
+
+<script>
+  import { fadeSceneUnder, revealOnScroll, revealTitles } from '../lib/motion';
+
+  fadeSceneUnder('.explore-chapter');
+
+  revealTitles('.explore-chapter .chapter__title');
+  revealOnScroll('.explore-chapter .reveal');
+</script>

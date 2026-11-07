@@ -1,0 +1,18 @@
+---
+import OverviewChapter from '../components/OverviewChapter.astro';
+import Footer from '../components/Footer.astro';
+import Hero from '../components/Hero.astro';
+import Nav from '../components/Nav.astro';
+import Pager from '../components/Pager.astro';
+import Base from '../layouts/Base.astro';
+---
+
+<Base>
+  <Nav current="overview" />
+  <main id="main">
+    <Hero />
+    <OverviewChapter />
+  </main>
+  <Pager current="overview" />
+  <Footer />
+</Base>

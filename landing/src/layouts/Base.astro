@@ -1,0 +1,126 @@
+---
+import '@fontsource/instrument-serif/400-italic.css';
+import '@fontsource-variable/geist';
+import '@fontsource-variable/geist-mono';
+
+import '../styles/global.css';
+import {
+  REPO_URL,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  docsHref,
+  href,
+} from '../lib/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = `${SITE_NAME} | Tools and architectures for production RAG`,
+  description = SITE_DESCRIPTION,
+} = Astro.props;
+
+const site = Astro.site ?? new URL('https://yigtwxx.github.io');
+const canonical = new URL(Astro.url.pathname, site).href;
+const homeUrl = new URL(href(), site).href;
+const ogImage = new URL(href('og.png'), site).href;
+const cfToken = import.meta.env['PUBLIC_CF_BEACON_TOKEN'] as string | undefined;
+
+// WebSite + SearchAction (sitelinks search box) lives on the home page; the
+// search itself is mkdocs' client-side search under /docs/.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE_NAME,
+  url: homeUrl,
+  description,
+  inLanguage: 'en',
+  sameAs: [REPO_URL],
+  author: { '@type': 'Person', name: 'Yigit Erdogan' },
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: `${new URL(docsHref(), site).href}?q={search_term_string}`,
+    'query-input': 'required name=search_term_string',
+  },
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={href('favicon.ico')} sizes="32x32" />
+    <link rel="icon" href={href('favicon.svg')} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={href('apple-touch-icon.png')} />
+    <meta name="theme-color" content="#03050a" />
+    <meta
+      name="keywords"
+      content="RAG, retrieval-augmented generation, production RAG, vector database, embeddings, reranking, RAG evaluation, RAG observability, LLM, awesome list"
+    />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- Google Search Console verifies the property at the site root, i.e. this page. -->
+    <meta
+      name="google-site-verification"
+      content="W9V_HNV7Tk7qsjhzOyziGFz7q80kqs4q89sKdJuF5ew"
+    />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <!-- Hides animated copy until GSAP takes over; a CSS failsafe reveals it anyway. -->
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+
+    {cfToken && (
+      <script
+        is:inline
+        defer
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon={JSON.stringify({ token: cfToken })}
+      />
+    )}
+  </head>
+  <body id="top">
+    <a class="skip-link" href="#main">
+      Skip to content
+    </a>
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  .skip-link {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 100;
+    padding: 0.6rem 0.9rem;
+    border-radius: var(--radius);
+    background: var(--chalk);
+    color: var(--night);
+    font-weight: 500;
+    text-decoration: none;
+    transform: translateY(-200%);
+  }
+
+  .skip-link:focus {
+    transform: none;
+  }
+</style>

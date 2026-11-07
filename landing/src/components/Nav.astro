@@ -1,0 +1,313 @@
+---
+import { getStarCount } from '../lib/github';
+import { PAGES, type PageId } from '../lib/pages';
+import { REPO_URL, docsHref, href } from '../lib/site';
+
+interface Props {
+  current: PageId;
+}
+
+const { current } = Astro.props;
+const stars = await getStarCount();
+const starLabel =
+  stars === undefined
+    ? undefined
+    : new Intl.NumberFormat('en-US', { notation: 'compact' }).format(stars);
+const pad = (n: number): string => String(n).padStart(2, '0');
+---
+
+<header class="nav">
+  <div class="nav__bar">
+    <a
+      class="nav__brand"
+      href={href()}
+      aria-label="Awesome RAG Production home"
+    >
+      <span class="nav__name">
+        Awesome RAG <em class="serif">Production</em>
+      </span>
+      <span class="nav__dot-mark" aria-hidden="true"></span>
+    </a>
+
+    <nav class="nav__tabs" aria-label="Sections">
+      {PAGES.map((page, i) => (
+        <a
+          class="nav__tab"
+          href={href(page.path)}
+          aria-current={page.id === current ? 'page' : undefined}
+        >
+          <span class="nav__tab-label">{page.label}</span>
+          <sup class="nav__tab-num">{pad(i + 1)}</sup>
+          {page.id === current && <span class="nav__dot" aria-hidden="true" />}
+        </a>
+      ))}
+    </nav>
+
+    <div class="nav__end">
+      <a class="nav__gh" href={REPO_URL}>
+        GitHub
+        {starLabel && (
+          <sup class="nav__gh-count" aria-label={`${stars} stars`}>
+            <span aria-hidden="true">★</span>
+            {starLabel}
+          </sup>
+        )}
+      </a>
+      <a class="nav__cta brackets" href={docsHref()}>
+        The list
+        <svg
+          width="10"
+          height="10"
+          viewBox="0 0 12 12"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M3.5 8.5l5-5M4.5 3.5h4v4"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+          ></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 40;
+  }
+
+  /* Transparent over the scene; a soft frosted strip once the page scrolls. */
+  .nav::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-bottom: 1px solid transparent;
+    background: linear-gradient(to bottom, rgb(2 5 16 / 0.55), transparent);
+    transition:
+      background 400ms ease,
+      border-color 400ms ease;
+  }
+
+  .nav.is-scrolled::before {
+    border-color: var(--line);
+    background: rgb(3 8 23 / 0.72);
+    backdrop-filter: blur(14px) saturate(1.2);
+  }
+
+  .nav__bar {
+    view-transition-name: site-nav;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 1.5rem;
+    height: 4.25rem;
+    padding-inline: var(--gutter);
+  }
+
+  .nav__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    justify-self: start;
+    color: var(--chalk);
+    font-size: 0.92rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  /* Wordmark ends in a warm point of light instead of a logo icon. */
+  .nav__dot-mark {
+    width: 5px;
+    height: 5px;
+    margin-left: 0.18rem;
+    align-self: flex-end;
+    margin-bottom: 0.32rem;
+    border-radius: 50%;
+    background: var(--sun);
+    box-shadow:
+      0 0 8px rgb(255 209 102 / 0.9),
+      0 0 18px rgb(255 209 102 / 0.45);
+  }
+
+  .nav__name em {
+    font-size: 1.1em;
+    color: var(--ice-hot);
+  }
+
+  .nav__tabs {
+    display: flex;
+    align-items: center;
+    gap: clamp(1.25rem, 3vw, 2.75rem);
+  }
+
+  .nav__tab {
+    position: relative;
+    display: inline-flex;
+    align-items: flex-start;
+    padding-block: 0.6rem;
+    color: rgb(237 240 245 / 0.55);
+    text-decoration: none;
+    transition: color 250ms ease;
+  }
+
+  .nav__tab:hover,
+  .nav__tab[aria-current='page'] {
+    color: var(--chalk);
+  }
+
+  .nav__tab-label {
+    font-size: 0.9rem;
+    font-weight: 450;
+    letter-spacing: 0.005em;
+  }
+
+  .nav__tab-num {
+    margin-left: 0.3rem;
+    color: var(--dim);
+    font: 500 0.58rem/1 var(--font-mono);
+    transition: color 250ms ease;
+  }
+
+  .nav__tab[aria-current='page'] .nav__tab-num {
+    color: var(--ice);
+  }
+
+  /* The active marker: a small glowing dot that glides between tabs. */
+  .nav__dot {
+    position: absolute;
+    left: 50%;
+    bottom: -0.15rem;
+    width: 4px;
+    height: 4px;
+    margin-left: -2px;
+    border-radius: 50%;
+    background: var(--ice-hot);
+    box-shadow:
+      0 0 6px var(--ice),
+      0 0 16px rgb(127 211 255 / 0.6);
+    view-transition-name: nav-indicator;
+  }
+
+  .nav__end {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1.4rem;
+  }
+
+  .nav__gh {
+    display: inline-flex;
+    align-items: flex-start;
+    color: rgb(237 240 245 / 0.7);
+    font-size: 0.88rem;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 250ms ease;
+  }
+
+  .nav__gh:hover {
+    color: var(--chalk);
+  }
+
+  .nav__gh-count {
+    margin-left: 0.3rem;
+    color: var(--mist);
+    font: 500 0.6rem/1 var(--font-mono);
+  }
+
+  .nav__gh-count span {
+    margin-right: 0.15rem;
+    color: var(--sun);
+  }
+
+  /* A framed instrument key: hairline box, bright corners, no pill. */
+  .nav__cta {
+    --bracket: rgb(237 240 245 / 0.9);
+    --bracket-inset: -1px;
+    --bracket-size: 7px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    height: 2.2rem;
+    padding-inline: 1rem;
+    border: 1px solid rgb(237 240 245 / 0.14);
+    background: rgb(237 240 245 / 0.04);
+    color: var(--chalk);
+    font-size: 0.84rem;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      background-color 250ms ease,
+      border-color 250ms ease;
+  }
+
+  .nav__cta svg {
+    transition: transform 250ms ease;
+  }
+
+  .nav__cta:hover {
+    --bracket: var(--ice);
+    --bracket-inset: -4px;
+    border-color: rgb(127 211 255 / 0.3);
+    background: rgb(127 211 255 / 0.1);
+  }
+
+  .nav__cta:hover svg {
+    transform: translate(2px, -2px);
+  }
+
+  @media (max-width: 64rem) {
+    .nav__gh {
+      display: none;
+    }
+  }
+
+  /* Phones: brand + star on top, the four tabs spread across a second row. */
+  @media (max-width: 40rem) {
+    .nav__bar {
+      grid-template-columns: 1fr auto;
+      grid-template-rows: 3.25rem 2.5rem;
+      row-gap: 0;
+      height: auto;
+    }
+
+    .nav__name em {
+      display: none;
+    }
+
+    .nav__tabs {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      justify-content: space-between;
+      gap: 0;
+    }
+
+    .nav__tab {
+      padding-block: 0.4rem;
+    }
+
+    .nav__tab-label {
+      font-size: 0.86rem;
+    }
+  }
+</style>
+
+<script>
+  const nav = document.querySelector<HTMLElement>('.nav');
+  if (nav) {
+    const update = (): void => {
+      nav.classList.toggle('is-scrolled', window.scrollY > 24);
+    };
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+  }
+</script>

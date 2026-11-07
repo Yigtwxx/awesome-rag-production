@@ -37,3 +37,14 @@ docs-site/docs/
 docs-site/site/
 # social plugin's generated card-image cache
 docs-site/.cache/
+
+# Landing page (Astro): dependencies, build output, generated data
+landing/node_modules/
+landing/dist/
+landing/.astro/
+landing/src/data/catalog.json
+# Assembled Pages artifact (landing + docs)
+_site/
+# Local design-tool cache
+.impeccable/
+landing/.impeccable/

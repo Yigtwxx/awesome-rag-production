@@ -3,8 +3,7 @@
 {#
 Adds the SEO/discoverability metadata that the `social` plugin does NOT emit.
 The social plugin already injects og:* and twitter:* tags + the card image, so
-here we only add: keyword hints, the Google Search Console verification tag, and
-schema.org structured data (WebSite + SearchAction → Google sitelinks search box).
+here we only add: keyword hints and the Google Search Console verification tag.
 `extrahead` is the empty block Material reserves for user additions, so this is
 purely additive and does not collide with the theme's own head tags.
 #}
@@ -16,24 +15,6 @@ purely additive and does not collide with the theme's own head tags.
        from Search Console → "HTML tag" verification, then redeploy and click Verify. -->
 <meta name="google-site-verification" content="W9V_HNV7Tk7qsjhzOyziGFz7q80kqs4q89sKdJuF5ew" />
 
-<!-- Structured data: WebSite + SearchAction (enables Google's sitelinks search box). -->
-<script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": {{ config.site_name | tojson }},
-    "url": {{ config.site_url | tojson }},
-    "description": {{ config.site_description | tojson }},
-    "inLanguage": "en",
-    "author": {
-      "@type": "Person",
-      "name": {{ config.site_author | tojson }}
-    },
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": {{ (config.site_url ~ "?q={search_term_string}") | tojson }},
-      "query-input": "required name=search_term_string"
-    }
-  }
-  </script>
+<!-- WebSite + SearchAction structured data lives on the landing page
+       (landing/src/layouts/Base.astro), which owns the site root. -->
 {% endblock %}

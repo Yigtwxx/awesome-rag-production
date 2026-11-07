@@ -1,0 +1,21 @@
+---
+import StacksChapter from '../components/StacksChapter.astro';
+import Footer from '../components/Footer.astro';
+import Nav from '../components/Nav.astro';
+import Pager from '../components/Pager.astro';
+import StacksScene from '../components/StacksScene.astro';
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Reference stacks | Awesome RAG Production"
+  description="Three reference RAG architectures, from a laptop prototype to an enterprise deployment, and a vector database picker by scale."
+>
+  <Nav current="stacks" />
+  <main id="main">
+    <StacksScene />
+    <StacksChapter />
+  </main>
+  <Pager current="stacks" />
+  <Footer />
+</Base>

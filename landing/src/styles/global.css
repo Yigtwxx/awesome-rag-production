@@ -1,0 +1,924 @@
+/*
+ * Design tokens, v2 ("Lattice").
+ * Night navy base with film grain; chalk-white grainy forms; construction
+ * lines. Two accents with fixed meaning:
+ *   amber = retrieved chunks (evidence on its way to the answer)
+ *   ice   = the grounded answer / verified signal (links, focus, CTAs)
+ */
+:root {
+  color-scheme: dark;
+
+  --night: #02040b;
+  --night-2: #06102a;
+  --navy: #0a1d45;
+  --panel: rgb(10 29 69 / 0.35);
+  --chalk: #edf0f5;
+  --mist: #8d97a8; /* 6.9:1 on --night */
+  --dim: #5b6576;
+  --ice: #7fd3ff;
+  --ice-hot: #d9f2ff;
+  --amber: #f3a53f;
+  /* Warm pops inside the blues (UI emphasis only; charts use src/lib/groups.ts). */
+  --sun: #ffd166;
+  --orange: #ff9442;
+  --coral: #ff6b57;
+  --line: rgb(237 240 245 / 0.1);
+  --line-strong: rgb(237 240 245 / 0.24);
+
+  --font-sans: 'Geist Variable', 'Geist', system-ui, sans-serif;
+  --font-mono: 'Geist Mono Variable', 'Geist Mono', ui-monospace, monospace;
+  --font-serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+
+  /* Modular scale (perfect fourth) on a 16px base. */
+  --step--1: 0.8125rem;
+  --step-0: 1rem;
+  --step-1: 1.333rem;
+  --step-2: 1.777rem;
+  --step-3: clamp(2.2rem, 4.4vw, 3.55rem);
+  --step-4: clamp(2.6rem, 5vw, 4.6rem);
+
+  --gutter: clamp(1.25rem, 4vw, 3.5rem);
+  --max: 82rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  background: var(--night);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  /* Ink navy that carries the hero's sky down the page, deepening to night. */
+  background:
+    radial-gradient(
+      70% 40rem at 85% 120rem,
+      rgb(14 40 96 / 0.35),
+      transparent 70%
+    ),
+    radial-gradient(
+      60% 36rem at 10% 260rem,
+      rgb(14 40 96 / 0.3),
+      transparent 70%
+    ),
+    radial-gradient(
+      70% 40rem at 80% 420rem,
+      rgb(14 40 96 / 0.28),
+      transparent 70%
+    ),
+    linear-gradient(
+      180deg,
+      #050f2b 0,
+      #040b22 25%,
+      #030819 60%,
+      var(--night) 100%
+    );
+  color: var(--chalk);
+  font-family: var(--font-sans);
+  font-size: var(--step-0);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+/* Film grain over the page (the hero canvas also grains in-shader). */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.09;
+  mix-blend-mode: overlay; /* texture without lifting blacks to grey */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+img,
+svg,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+h2 {
+  font-size: var(--step-3);
+  line-height: 1.02;
+}
+
+h3 {
+  font-size: var(--step-1);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+/* The serif italic carries the second voice of a headline (a whole clause). */
+.serif {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ice);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+::selection {
+  background: var(--ice);
+  color: var(--night);
+}
+
+.container {
+  width: min(100% - 2 * var(--gutter), var(--max));
+  margin-inline: auto;
+}
+
+.section {
+  position: relative;
+  padding-block: clamp(5.5rem, 12vw, 10rem);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.65;
+  letter-spacing: 0.01em;
+}
+
+.lede {
+  max-width: 36rem;
+  color: var(--mist);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Viewfinder corners: marks the element that is selected / in focus. */
+.brackets {
+  position: relative;
+}
+
+.brackets::before {
+  --c: var(--bracket, var(--line-strong));
+  --s: var(--bracket-size, 12px);
+  content: '';
+  position: absolute;
+  inset: var(--bracket-inset, -6px);
+  pointer-events: none;
+  background:
+    linear-gradient(var(--c) 0 0) top left / var(--s) 1px,
+    linear-gradient(var(--c) 0 0) top left / 1px var(--s),
+    linear-gradient(var(--c) 0 0) top right / var(--s) 1px,
+    linear-gradient(var(--c) 0 0) top right / 1px var(--s),
+    linear-gradient(var(--c) 0 0) bottom left / var(--s) 1px,
+    linear-gradient(var(--c) 0 0) bottom left / 1px var(--s),
+    linear-gradient(var(--c) 0 0) bottom right / var(--s) 1px,
+    linear-gradient(var(--c) 0 0) bottom right / 1px var(--s);
+  background-repeat: no-repeat;
+  transition: inset 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/*
+ * SplitText masks (motion.liftText): the clip edge bleeds past the box so
+ * descenders, accents and italic overhangs are not cut while text rises.
+ */
+.split-line-mask,
+.split-word-mask {
+  overflow-clip-margin: 0.24em;
+}
+
+/* Buttons: square slabs framed by viewfinder corners that close in on hover. */
+.btn {
+  --bracket: rgb(237 240 245 / 0.45);
+  --bracket-inset: -6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 1.3rem;
+  min-height: 3.1rem;
+  padding: 0 0 0 1.4rem;
+  font: 500 0.95rem/1 var(--font-sans);
+  letter-spacing: -0.005em;
+  text-decoration: none;
+  transition:
+    background-color 220ms ease,
+    color 220ms ease,
+    transform 180ms ease;
+}
+
+.btn:hover {
+  --bracket: var(--ice);
+  --bracket-inset: -3px;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn--light {
+  background: var(--chalk);
+  color: var(--night);
+}
+
+.btn--light:hover {
+  background: var(--ice-hot);
+}
+
+.btn__arrow {
+  display: grid;
+  place-items: center;
+  align-self: stretch;
+  width: 3.1rem;
+  border-left: 1px solid rgb(2 4 11 / 0.14);
+  overflow: hidden;
+}
+
+.btn__arrow svg {
+  transition: transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.btn:hover .btn__arrow svg {
+  transform: translateX(3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Section heads: sans statement + serif italic counterpoint. */
+.section-head {
+  display: grid;
+  gap: 1.1rem;
+  max-width: 44rem;
+  margin-bottom: clamp(2.5rem, 6vw, 4.5rem);
+}
+
+.section-head h2 .serif {
+  display: block;
+  font-size: 1.08em;
+  line-height: 1;
+}
+
+.tone-ice {
+  color: var(--ice-hot);
+}
+
+.tone-sun {
+  color: var(--sun);
+}
+
+.tone-coral {
+  color: var(--coral);
+}
+
+.tone-orange {
+  color: var(--orange);
+}
+
+/* Shared chart tooltip (src/lib/tooltip.ts). */
+.viz-tooltip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 60;
+  display: grid;
+  gap: 0.2rem;
+  max-width: 19rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: rgb(6 16 42 / 0.94);
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.45);
+  color: var(--mist);
+  font: 0.78rem/1.45 var(--font-mono);
+  pointer-events: none;
+}
+
+.viz-tooltip[hidden] {
+  display: none;
+}
+
+.viz-tooltip__title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--chalk);
+  font: 600 0.9rem/1.3 var(--font-sans);
+}
+
+.viz-tooltip__swatch {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+}
+
+/* Legend chip: swatch + label in text tokens (never coloured text). */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--mist);
+  font: 0.78rem/1.4 var(--font-mono);
+}
+
+.legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.legend i {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+}
+
+/* ------------------------------------------------------------------------- */
+/* Tab scenes (Explore / Stacks / Evidence): full-screen WebGL + overlay UI, */
+/* the same vocabulary as the hero.                                          */
+/* ------------------------------------------------------------------------- */
+.scene {
+  position: relative;
+  isolation: isolate;
+  min-height: max(100svh, 46rem);
+  overflow: hidden;
+  background: var(--night);
+}
+
+.scene__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  width: 100%;
+  height: 100%;
+}
+
+.scene::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgb(2 4 11 / 0.6), transparent 48%);
+}
+
+.scene--fallback {
+  background:
+    radial-gradient(
+      30% 40% at 62% 46%,
+      rgb(127 211 255 / 0.18),
+      transparent 70%
+    ),
+    linear-gradient(to bottom, #07133a, var(--night));
+}
+
+.scene--fallback .scene__canvas {
+  display: none;
+}
+
+.scene__layout {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 23rem);
+  grid-template-rows: auto 1fr auto;
+  gap: 1.5rem 2rem;
+  min-height: inherit;
+  padding: 8rem var(--gutter) 2.25rem;
+  pointer-events: none;
+}
+
+.scene__layout > * {
+  pointer-events: auto;
+}
+
+.scene__copy {
+  grid-column: 1;
+  grid-row: 1 / -1;
+  align-self: center;
+  max-width: min(34rem, 44vw);
+}
+
+.scene__title {
+  font-size: clamp(2.5rem, 4.6vw, 4.4rem);
+  line-height: 0.96;
+}
+
+.scene__title .serif {
+  display: block;
+  margin-top: 0.05em;
+  font-size: 1.08em;
+}
+
+.scene__lede {
+  max-width: 30rem;
+  margin-top: 1.4rem;
+  color: rgb(237 240 245 / 0.72);
+}
+
+.scene__note {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+  max-width: 17rem;
+  color: var(--mist);
+  text-align: right;
+}
+
+.scene__panel {
+  grid-column: 2;
+  grid-row: 3;
+  align-self: end;
+  width: 100%;
+}
+
+.scene__counter {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0.15em;
+  font-size: clamp(3rem, 5.2vw, 4.8rem);
+  font-weight: 600;
+  line-height: 0.85;
+  letter-spacing: -0.06em;
+  font-variant-numeric: tabular-nums;
+}
+
+.scene__counter small {
+  color: var(--dim);
+  font-size: 1em;
+  font-weight: 600;
+}
+
+.scene__rule {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.scene__labels {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.scene-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.22rem 0.55rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: rgb(2 4 11 / 0.78);
+  color: var(--chalk);
+  font: 600 0.78rem/1.3 var(--font-sans);
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.scene-label b {
+  margin-right: 0.4rem;
+  color: var(--dim);
+  font: 500 0.72rem var(--font-mono);
+}
+
+.scene-label.is-top {
+  border-color: rgb(127 211 255 / 0.6);
+  color: var(--ice-hot);
+}
+
+/* Square bracket buttons (same as the hero's arrows). */
+.scene-btn {
+  --bracket: var(--line-strong);
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border: 0;
+  border-radius: 2px;
+  background: rgb(10 29 69 / 0.55);
+  color: var(--chalk);
+  cursor: pointer;
+  transition: background-color 180ms ease;
+}
+
+.scene-btn:hover {
+  --bracket: var(--ice);
+  background: rgb(127 211 255 / 0.16);
+}
+
+/* Search field (Explore): a square readout with ice corners. */
+.field {
+  --bracket: rgb(127 211 255 / 0.8);
+  --bracket-inset: -1px;
+  --bracket-size: 9px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 30rem;
+  padding: 0.3rem 0.6rem 0.3rem 1rem;
+  border: 1px solid rgb(127 211 255 / 0.2);
+  background:
+    linear-gradient(90deg, rgb(127 211 255 / 0.08), transparent 55%),
+    rgb(2 4 11 / 0.8);
+  transition: border-color 220ms ease;
+}
+
+.field:focus-within {
+  --bracket: var(--ice-hot);
+  border-color: rgb(127 211 255 / 0.5);
+}
+
+.field input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.55rem 0.25rem;
+  border: 0;
+  background: none;
+  color: var(--chalk);
+  font: 500 0.98rem var(--font-sans);
+  outline: none;
+}
+
+.field input::placeholder {
+  color: var(--dim);
+}
+
+@media (max-width: 60rem) {
+  .scene__layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    padding-top: calc(48svh + 1rem);
+    pointer-events: auto;
+  }
+
+  .scene::before {
+    background: linear-gradient(0deg, rgb(2 4 11 / 0.85) 40%, transparent 70%);
+  }
+
+  .scene__copy {
+    grid-row: auto;
+    max-width: none;
+  }
+
+  .scene__note {
+    display: none;
+  }
+
+  .scene__panel {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .scene__counter {
+    justify-content: flex-start;
+  }
+}
+
+/* Cross-document view transitions between tabs (progressive enhancement). */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root) {
+  animation: vt-out 360ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+::view-transition-new(root) {
+  animation: vt-in 560ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+::view-transition-group(nav-indicator) {
+  animation-duration: 520ms;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes vt-out {
+  to {
+    opacity: 0;
+    filter: blur(8px);
+    transform: scale(0.985);
+  }
+}
+
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+    transform: scale(1.015);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* ------------------------------------------------------------------------- */
+/* Chapters: the scrollable part under each tab's scene. Editorial, quiet,    */
+/* generous: large type, hairlines, one accent per row.                      */
+/* ------------------------------------------------------------------------- */
+.chapter {
+  position: relative;
+  padding-block: clamp(6rem, 12vw, 10rem);
+}
+
+.chapter::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: var(--gutter);
+  right: var(--gutter);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(127 211 255 / 0.4),
+    transparent
+  );
+}
+
+.chapter__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  gap: 1.5rem 4rem;
+  align-items: end;
+  margin-bottom: clamp(3rem, 6vw, 5rem);
+}
+
+.chapter__title {
+  font-size: clamp(2.4rem, 5vw, 4.4rem);
+  line-height: 0.98;
+}
+
+.chapter__title .serif {
+  display: block;
+  font-size: 1.06em;
+}
+
+.chapter__lede {
+  max-width: 30rem;
+  color: var(--mist);
+}
+
+.rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+
+.row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr) minmax(0, 1.4fr) 6rem;
+  gap: 1.25rem 2rem;
+  align-items: baseline;
+  padding: 1.7rem 0;
+  border-bottom: 1px solid var(--line);
+  color: inherit;
+  text-decoration: none;
+}
+
+/* A light sweep along the row's hairline on hover. */
+.row::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--ice), rgb(127 211 255 / 0));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+a.row:hover::after,
+.row:focus-within::after {
+  transform: scaleX(1);
+}
+
+.row__num {
+  font: italic 400 2.4rem/1 var(--font-serif);
+  color: rgb(237 240 245 / 0.32);
+  transition: color 300ms ease;
+}
+
+a.row:hover .row__num {
+  color: var(--sun);
+}
+
+.row__title {
+  font-size: clamp(1.2rem, 1.8vw, 1.5rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.row__title small {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--mist);
+  font: 0.78rem/1.5 var(--font-mono);
+  letter-spacing: 0;
+}
+
+.row__body {
+  color: var(--mist);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.row__aside {
+  justify-self: end;
+  color: var(--chalk);
+  font: italic 400 2rem/1 var(--font-serif);
+}
+
+.row__aside small {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--dim);
+  font: 0.68rem var(--font-mono);
+  font-style: normal;
+  text-align: right;
+}
+
+.swatch {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 0.5rem;
+  border-radius: 50%;
+  vertical-align: 0.1em;
+  box-shadow: 0 0 10px currentColor;
+}
+
+@media (max-width: 60rem) {
+  .chapter__head {
+    grid-template-columns: 1fr;
+  }
+
+  .row {
+    grid-template-columns: 3rem minmax(0, 1fr) auto;
+  }
+
+  .row__body {
+    grid-column: 2 / -1;
+  }
+
+  .row__aside {
+    grid-row: 1;
+    grid-column: 3;
+  }
+}
+
+/* ------------------------------------------------------------------------- */
+/* Frosted-glass handoff: the scene holds still while the chapter slides over */
+/* it as a translucent, blurred sheet (the universe keeps moving behind).     */
+/* ------------------------------------------------------------------------- */
+.chapter {
+  z-index: 1;
+  margin-top: 0;
+  border-top: 1px solid rgb(237 240 245 / 0.12);
+  background: linear-gradient(
+    to bottom,
+    rgb(6 16 42 / 0.28),
+    rgb(3 8 23 / 0.68) 24rem,
+    rgb(3 8 23 / 0.82)
+  );
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.07),
+    0 -30px 80px -24px rgb(0 0 0 / 0.65);
+  -webkit-backdrop-filter: blur(26px) saturate(1.25);
+  backdrop-filter: blur(26px) saturate(1.25);
+}
+
+.chapter::before {
+  left: 18%;
+  right: 18%;
+}
+
+@media (min-width: 60.01rem) {
+  /* #main outranks the components' scoped `position: relative`. */
+  #main > .hero,
+  #main > .scene {
+    position: sticky;
+    top: 0;
+    z-index: 0;
+  }
+}
+
+/* Pager and footer sit on an opaque night so the stuck scene never peeks out. */
+.pager,
+.footer {
+  position: relative;
+  z-index: 1;
+  background-color: var(--night);
+}
+
+/* ------------------------------------------------------------------------- */
+/* HUD: the instrument panel at the bottom right of every scene.             */
+/* Frosted glass, square, with viewfinder ticks at the corners.              */
+/* ------------------------------------------------------------------------- */
+.hud {
+  --tick: rgb(237 240 245 / 0.55);
+  position: relative;
+  padding: 1.35rem 1.5rem 1.4rem;
+  background:
+    linear-gradient(
+      160deg,
+      rgb(255 255 255 / 0.07),
+      rgb(255 255 255 / 0.015) 45%
+    ),
+    rgb(4 12 32 / 0.38);
+  box-shadow:
+    inset 0 0 0 1px rgb(237 240 245 / 0.08),
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    0 40px 80px -40px rgb(0 0 0 / 0.8);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  backdrop-filter: blur(18px) saturate(1.3);
+}
+
+.hud::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--tick) 0 0) top left / 14px 1px,
+    linear-gradient(var(--tick) 0 0) top left / 1px 14px,
+    linear-gradient(var(--tick) 0 0) top right / 14px 1px,
+    linear-gradient(var(--tick) 0 0) top right / 1px 14px,
+    linear-gradient(var(--tick) 0 0) bottom left / 14px 1px,
+    linear-gradient(var(--tick) 0 0) bottom left / 1px 14px,
+    linear-gradient(var(--tick) 0 0) bottom right / 14px 1px,
+    linear-gradient(var(--tick) 0 0) bottom right / 1px 14px;
+  background-repeat: no-repeat;
+}
+
+/* Counters: a serif italic figure with a quiet mono total. */
+.scene__counter {
+  align-items: baseline;
+  gap: 0.35rem;
+  font: italic 400 clamp(3.4rem, 5vw, 4.6rem) / 0.8 var(--font-serif);
+  letter-spacing: -0.02em;
+}
+
+.scene__counter small {
+  color: var(--mist);
+  font: 500 0.78rem/1 var(--font-mono);
+  font-style: normal;
+  letter-spacing: 0.04em;
+}

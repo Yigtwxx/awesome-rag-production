@@ -1,0 +1,225 @@
+---
+import { catalog } from '../lib/catalog';
+import { GROUPS } from '../lib/groups';
+import { docsHref } from '../lib/site';
+
+// Rows of the comparison: each stack layer falls into one bucket.
+const BUCKETS = [
+  { name: 'Model and serving', re: /llm|serv|model/i, group: 'serve' },
+  { name: 'Vector database', re: /vector|index|embed/i, group: 'index' },
+  { name: 'Reranking', re: /rerank|retriev/i, group: 'retrieve' },
+  {
+    name: 'Evaluation and monitoring',
+    re: /eval|trac|monitor|observ/i,
+    group: 'operate',
+  },
+];
+const colorOf = (id: string): string =>
+  GROUPS.find((g) => g.id === id)?.color ?? '#7d8796';
+const tiers = catalog.architectures.map((t) => ({
+  name: t.name.replace(/^The\s+/, '').replace(/\s+Stack$/, ''),
+  tagline: t.tagline,
+  goal: t.goal,
+  stack: t.stack,
+}));
+const matrix = BUCKETS.map((bucket) => ({
+  ...bucket,
+  color: colorOf(bucket.group),
+  cells: tiers.map((tier) =>
+    tier.stack
+      .filter((item) => bucket.re.test(item.role))
+      .flatMap((item) => item.tools)
+      .join(', '),
+  ),
+}));
+const pad = (n: number): string => String(n).padStart(2, '0');
+---
+
+<section class="chapter stacks-chapter" aria-labelledby="stacks-chapter-title">
+  <div class="container">
+    <header class="chapter__head">
+      <h2 id="stacks-chapter-title" class="chapter__title">
+        Side by side,
+        <span class="serif tone-orange">layer by layer.</span>
+      </h2>
+      <p class="chapter__lede">
+        The three reference stacks compared on the same layers, then the scale
+        ladder the vector-database guide uses to shortlist engines.
+      </p>
+    </header>
+
+    <div
+      class="stacks-chapter__table reveal"
+      role="table"
+      aria-label="Reference stacks compared"
+    >
+      <div class="stacks-chapter__row stacks-chapter__row--head" role="row">
+        <span role="columnheader" class="mono">
+          Layer
+        </span>
+        {tiers.map((tier, i) => (
+          <span role="columnheader">
+            <span class="mono">{pad(i + 1)}</span>
+            <strong>{tier.name}</strong>
+            <em class="serif">{tier.tagline}</em>
+          </span>
+        ))}
+      </div>
+      <div class="stacks-chapter__row" role="row">
+        <span role="rowheader" class="mono">
+          Goal
+        </span>
+        {tiers.map((tier, i) => (
+          <span
+            role="cell"
+            class="stacks-chapter__goal"
+            data-tier={`${pad(i + 1)} ${tier.name}`}
+          >
+            {tier.goal}
+          </span>
+        ))}
+      </div>
+      {matrix.map((row) => (
+        <div class="stacks-chapter__row" role="row">
+          <span role="rowheader" class="mono">
+            <span
+              class="swatch"
+              style={`background:${row.color};color:${row.color}`}
+            />
+            {row.name}
+          </span>
+          {row.cells.map((cell, i) => (
+            <span
+              role="cell"
+              class:list={[!cell && 'is-empty']}
+              data-tier={`${pad(i + 1)} ${tiers[i]?.name ?? ''}`}
+            >
+              {cell || 'Not in this stack'}
+            </span>
+          ))}
+        </div>
+      ))}
+    </div>
+
+    <h3 class="stacks-chapter__sub reveal">How many vectors?</h3>
+    <ol class="rows">
+      {catalog.scaleLadder.map((rung, i) => (
+        <li>
+          <a class="row reveal" href={docsHref('vector-database-comparison/')}>
+            <span class="row__num">{pad(i + 1)}</span>
+            <span class="row__title">
+              {rung.choices.join(', ')}
+              <small>reasonable choices</small>
+            </span>
+            <span class="row__body">{rung.notes}</span>
+            <span class="row__aside stacks-chapter__range">{rung.range}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .stacks-chapter__table {
+    border-top: 1px solid var(--line);
+  }
+
+  .stacks-chapter__row {
+    display: grid;
+    grid-template-columns: minmax(10rem, 0.8fr) repeat(3, minmax(0, 1fr));
+    gap: 1.5rem 2rem;
+    padding: 1.4rem 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--chalk);
+    font-size: 1rem;
+  }
+
+  .stacks-chapter__row > [role='rowheader'] {
+    color: var(--mist);
+  }
+
+  .stacks-chapter__row--head > span {
+    display: grid;
+    gap: 0.3rem;
+    color: var(--mist);
+  }
+
+  .stacks-chapter__row--head strong {
+    color: var(--chalk);
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .stacks-chapter__row--head em {
+    color: var(--orange);
+    font-size: 1.35rem;
+  }
+
+  .stacks-chapter__goal {
+    color: var(--mist);
+    font-size: 0.95rem;
+  }
+
+  .is-empty {
+    color: var(--dim);
+    font-style: italic;
+  }
+
+  .stacks-chapter__sub {
+    margin: clamp(4rem, 8vw, 6rem) 0 1.5rem;
+    font-size: clamp(1.6rem, 2.6vw, 2.2rem);
+  }
+
+  .stacks-chapter__range {
+    font-size: 1.6rem;
+    white-space: nowrap;
+  }
+
+  /*
+   * Phones: no sideways-scrolling table (it leaves half-cut columns at the
+   * edge). Each layer becomes a block and every cell names its own stack.
+   */
+  @media (max-width: 48rem) {
+    .stacks-chapter__row--head {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    .stacks-chapter__row {
+      grid-template-columns: 1fr;
+      gap: 0.85rem;
+    }
+
+    .stacks-chapter__row > [role='rowheader'] {
+      color: var(--chalk);
+    }
+
+    .stacks-chapter__row > [role='cell'] {
+      display: grid;
+      grid-template-columns: minmax(0, 7.5rem) minmax(0, 1fr);
+      gap: 1rem;
+    }
+
+    .stacks-chapter__row > [role='cell']::before {
+      content: attr(data-tier);
+      color: var(--dim);
+      font: 500 0.7rem/1.6 var(--font-mono);
+      font-style: normal;
+    }
+  }
+</style>
+
+<script>
+  import { fadeSceneUnder, revealOnScroll, revealTitles } from '../lib/motion';
+
+  fadeSceneUnder('.stacks-chapter');
+
+  revealTitles('.stacks-chapter .chapter__title');
+  revealOnScroll('.stacks-chapter .reveal');
+</script>

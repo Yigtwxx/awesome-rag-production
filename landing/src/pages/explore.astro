@@ -1,0 +1,22 @@
+---
+import ExploreChapter from '../components/ExploreChapter.astro';
+import ExploreScene from '../components/ExploreScene.astro';
+import Footer from '../components/Footer.astro';
+import Nav from '../components/Nav.astro';
+import Pager from '../components/Pager.astro';
+import Base from '../layouts/Base.astro';
+import { catalog } from '../lib/catalog';
+---
+
+<Base
+  title="Explore the catalog | Awesome RAG Production"
+  description={`Search ${catalog.totals.tools} production RAG tools with an in-browser retriever, and watch the list grow month by month.`}
+>
+  <Nav current="explore" />
+  <main id="main">
+    <ExploreScene />
+    <ExploreChapter />
+  </main>
+  <Pager current="explore" />
+  <Footer />
+</Base>
