@@ -21,12 +21,6 @@ running Retrieval-Augmented Generation at scale.
 - [Notion AI](https://www.notion.com/product/ai)
   - How Notion integrated RAG into a collaborative workspace for millions of non-technical users — agents, search, and knowledge management in one product surface.
 
-### [Discord](https://discord.com/)
-
-<!-- allow-duplicate -->
-- [How Discord Scaled Vector Search](https://discord.com/blog/how-discord-stores-trillions-of-messages)
-  - A masterclass in ANN retrieval at trillion-message scale — Rust-based microservices with ScyllaDB for metadata, used in Clyde and search.
-
 ---
 
 ## Enterprise & B2B

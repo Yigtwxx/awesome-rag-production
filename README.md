@@ -31,8 +31,8 @@ search the whole catalog, compare the reference stacks side by side, and browse 
 **Not a link dump.** Every entry is selected for production use, and every
 benchmark number is source-tagged (`[3P]` third-party / `[V]` vendor /
 `[A]` author) or removed. You also get decision guides, three reference
-architectures (local → enterprise), and real case studies — LinkedIn,
-DoorDash, and Discord.
+architectures (local → enterprise), and real case studies from LinkedIn
+and DoorDash.
 
 > ⭐ **Star the repo** to follow updates — the list is freshness-audited weekly.
 
@@ -261,10 +261,6 @@ Learn from production RAG implementations at scale. These companies have battle-
 - [DoorDash — Personalized Store Feed with Vector Retrieval](https://doordash.engineering/2023/08/01/improving-store-feed-ranking-with-vector-retrieval/)
   - Vector retrieval layer added to the store-feed ranking pipeline, reducing cold-start latency and improving personalization.
     Demonstrates how retrieval augmentation integrates alongside traditional ranking signals in an existing production recommendation system.
-
-<!-- allow-duplicate -->
-- [Discord — Message Search at Trillion Scale](https://discord.com/blog/how-discord-stores-trillions-of-messages)
-  - Custom ANN search + Rust microservices + ScyllaDB for indexing and retrieving trillions of messages. Key insight: Rust-based infrastructure enables ANN search at this scale.
 
 **Common Patterns:**
 
@@ -1233,12 +1229,14 @@ different bottleneck — deploying them in combination yields compounding return
     Redis/S3/Disk backends, and cache-control headers. Pairs with the LiteLLM
     proxy for a unified cost-management and caching layer.
 - [OpenAI Prompt Caching](https://developers.openai.com/api/docs/guides/prompt-caching)
-  <!-- verified: 2026-08-21 -->
-  - Automatic prefix caching for GPT-4o and o-series models; requires zero code
-    changes and delivered a 50% input-token discount on cache hits at launch
-    (\[V\] [OpenAI announcement](https://openai.com/index/api-prompt-caching/) · 2024-10),
-    though current docs state the discount varies by model. Effective when system
-    prompts or retrieved context blocks exceed 1,024 tokens.
+  <!-- verified: 2026-11-07 -->
+  - Prefix caching that works implicitly with no code changes; GPT-5.6 and
+    later also accept explicit cache controls. Cache reads cost 0.1× the
+    uncached input rate on most current models, and writes cost 1.25× for the
+    default 30-minute lifetime
+    (\[V\] [OpenAI docs](https://developers.openai.com/api/docs/guides/prompt-caching) · 2026-11).
+    Effective when system prompts or retrieved context blocks exceed 1,024
+    tokens.
 - [RedisVL Semantic Cache](https://github.com/redis/redis-vl-python)
   - A Redis Stack–backed semantic cache library with sub-millisecond lookup
     latency. Leverages Redis Vector Sets for similarity search and supports

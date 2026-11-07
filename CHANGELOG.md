@@ -32,6 +32,20 @@ tracked in [ROADMAP.md](ROADMAP.md).
   to the same PostgreSQL index, so its description was rewritten).
 - Dependabot opens grouped monthly PRs for GitHub Actions instead of weekly
   ones. The actions are SHA-pinned, so the weekly bumps were mostly noise.
+- OpenAI prompt-caching figures now follow the current docs instead of the
+  2024 launch figure (a 50% discount): reads cost 0.1× the input rate on most
+  models (0.05× on GPT-6.1 Sol and Terra), and writes cost 1.25× for the
+  30-minute lifetime or 2.5× for 12 hours.
+
+### Fixed
+
+- The Discord case study is gone from README, `showcase.md`, and
+  `benchmarks.md`. The cited post covers message storage (Cassandra to
+  ScyllaDB), not ANN or vector search, so nothing in it supported the "vector
+  search at trillion-message scale" framing.
+- The Qdrant recall and latency rows moved to § Gaps. The vendor's own raw
+  results (2024-06-15, not re-run since) show a p99 of 14.3 ms and 3.5 ms at
+  0.99 precision, not the ~1 ms and ~2 ms the rows stated.
 
 ## 2026-10
 

@@ -24,7 +24,7 @@
 > a peer-reviewed result does not expire. Vendor docs and leaderboard snapshots
 > are never exempt; the weekly audit flags them once they pass 365 days.
 >
-> *Last reviewed: 2026-08-21*
+> *Last reviewed: 2026-11-07*
 
 ---
 
@@ -44,15 +44,15 @@ but no independent reproduction exists, the `[V]` tag is the disclosure mechanis
 
 | System | Dataset | Recall@10 | p99 Latency | Tag | Source | Date | Methodology |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Qdrant | gist-960-euclidean | 0.990 | ~1 ms (RPS-optimised) | \[V\] | [qdrant.tech/benchmarks](https://qdrant.tech/benchmarks/) | 2024-06-15 | [Benchmark FAQ](https://qdrant.tech/benchmarks/benchmark-faq/) — open-source, reproducible |
-| Qdrant | dbpedia-openai-1M-1536-angular | 0.990 | ~2 ms | \[V\] | [qdrant.tech/benchmarks](https://qdrant.tech/benchmarks/) | 2024-06-15 | Same as above |
 | All major systems | SIFT-1M | 0.95–0.99 | 1–20 ms (HNSW) | \[3P\] | [ann-benchmarks.com](https://ann-benchmarks.com/) | 2026-07-10 | [github.com/erikbern/ann-benchmarks](https://github.com/erikbern/ann-benchmarks) — standardized, reproducible |
 
-**Note:** The Qdrant rows above are **vendor-published** benchmarks, last
-re-run 2024-06-15. For independent reproduction, use
+**Note:** For independent, per-system numbers use
 [ANN-Benchmarks](https://ann-benchmarks.com/). Recall@10 depends heavily on HNSW
 `ef_search`; tuning for throughput vs. recall is a production trade-off, not a
 fixed property of the system.
+
+Two Qdrant rows were removed on 2026-11-07: their latency figures do not match
+the vendor's own raw results (see [§ Gaps](#9-gaps--not-publicly-measured)).
 
 A Milvus recall row previously sat here citing the Milvus benchmark report. That
 report measures QPS and response time only and publishes no recall figure, so the
@@ -118,7 +118,8 @@ smaller. No single number applies universally — evaluate on your own corpus
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | Anthropic (Claude) | Input token cost on cache hit | ~10% of standard price (−90%) | \[V\] | [Anthropic Prompt Caching Docs](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) | 2026-08-01 | Requires a `cache_control` breakpoint. Cache TTL is 5 min by default, 1 h optional |
 | Anthropic (Claude) | Cache *write* cost premium | 1.25× standard price (5 min TTL), 2× (1 h TTL) | \[V\] | [Anthropic Prompt Caching Docs](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) | 2026-08-01 | The break-even point: 5-min TTL pays off from the second read, 1-h TTL from the third |
-| OpenAI (GPT-4o / o-series) | Input token price on cache hit | 50% discount | \[V\] | [OpenAI Prompt Caching](https://openai.com/index/api-prompt-caching/) | 2024-10 | Automatic, no code changes; min. 1,024 cached tokens. The 2024 announcement figure; current [docs](https://developers.openai.com/api/docs/guides/prompt-caching) state discounts vary by model — check the pricing page for the model you serve |
+| OpenAI (GPT-5.6 and later) | Input token cost on cache hit | 0.1× standard price (−90%); 0.05× (−95%) on GPT-6.1 Sol and GPT-6.1 Terra | \[V\] | [OpenAI Prompt Caching Docs](https://developers.openai.com/api/docs/guides/prompt-caching) | 2026-11-07 | Implicit caching needs no code changes; min. 1,024 cached tokens. Earlier models keep model-dependent rates (the 2024 [launch announcement](https://openai.com/index/api-prompt-caching/) gave a 50% discount) |
+| OpenAI (GPT-5.6 and later) | Cache *write* cost premium | 1.25× standard price (30 min lifetime, the default), 2.5× (12 h) | \[V\] | [OpenAI Prompt Caching Docs](https://developers.openai.com/api/docs/guides/prompt-caching) | 2026-11-07 | Break-even: the 30 min tier pays off on the first cache read, the 12 h tier from the second |
 
 **All rows above are vendor-stated `[V]`.** No independent third-party
 reproduction of these caching figures exists in the public literature at time of
@@ -163,7 +164,6 @@ evidence, not exact benchmarks.
 
 | Company | System | Reported Result | Tag | Source | Date |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| Discord | Trillion-message search (ANN + Rust + ScyllaDB) | ANN search at trillions-of-messages scale | \[A\] | [Discord Engineering Blog](https://discord.com/blog/how-discord-stores-trillions-of-messages) | 2023-03-06 |
 | LinkedIn | Conversational job search (in-house VDB + BERT) | Member-personalized recommendations at LinkedIn scale | \[A\] | [LinkedIn Engineering Blog](https://engineering.linkedin.com/blog) | Ongoing — no specific post with RAG metrics confirmed |
 
 **Important caveat:** The Shopify "18% → 4% hallucination reduction" figure has been moved to
@@ -209,7 +209,7 @@ can outperform CPU benchmarks by an order of magnitude for large batches.
 "Benchmark results" from a different hardware class are not directly transferable.
 
 **Caching figures are upper bounds.** Vendor caching claims (Anthropic 90% cost,
-OpenAI 50% discount) assume near-100% cache hit rate and long shared prefixes.
+OpenAI up to 95%) assume near-100% cache hit rate and long shared prefixes.
 Real-world hit rates depend on prompt structure, TTL, and query repetition.
 Measure your own hit rate with `cache_creation_input_tokens` and
 `cache_read_input_tokens` from the API response.
@@ -260,6 +260,18 @@ data is itself information engineers need when making sourcing decisions.
   row was removed. A comparable Milvus recall number would need a
   [VectorDBBench](https://github.com/zilliztech/VectorDBBench) run with the index
   parameters stated.
+
+- **Qdrant recall and latency** were listed in
+  [§1a](#1a-recall--latency-single-node-hnsw) as 0.99 Recall@10 at ~1 ms p99
+  (gist-960-euclidean) and ~2 ms p99 (dbpedia-openai-1M-1536-angular), cited to
+  [qdrant.tech/benchmarks](https://qdrant.tech/benchmarks/). The page's raw
+  results file (`results-1-100-thread-2024-06-15.json`), checked on
+  2026-11-07, does not support those figures: the lowest p99 among Qdrant runs
+  at ≥ 0.99 precision is 14.3 ms on gist-960 and 3.5 ms on dbpedia-1536, both
+  with a single client. The benchmark has not been re-run since June 2024, so
+  the rows were removed rather than corrected to a two-year-old figure. A
+  current number would need a fresh
+  [vector-db-benchmark](https://github.com/qdrant/vector-db-benchmark) run.
 
 - **Prompt-caching latency reduction** is quoted across the community as "up to
   −85%" (Anthropic) and "up to −80%" (OpenAI). Neither number appears in the
