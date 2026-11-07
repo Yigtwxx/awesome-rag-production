@@ -1,4 +1,4 @@
-name: Deploy Docs (GitHub Pages)
+name: Deploy Site (GitHub Pages)
 
 on:
   push:
@@ -6,11 +6,17 @@ on:
     paths:
       - '**/*.md'
       - 'docs-site/**'
+      - 'landing/**'
+      - 'scripts/site_stats.py'
+      - 'scripts/entry_patterns.py'
       - '.github/workflows/docs.yml'
   pull_request:
     paths:
       - '**/*.md'
       - 'docs-site/**'
+      - 'landing/**'
+      - 'scripts/site_stats.py'
+      - 'scripts/entry_patterns.py'
       - '.github/workflows/docs.yml'
   workflow_dispatch:
 
@@ -30,6 +36,9 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Full history: the landing page plots the list's growth from git.
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
@@ -47,8 +56,38 @@ jobs:
       - name: Stage Docs
         run: bash docs-site/stage_docs.sh
 
-      - name: Build Site
+      - name: Build Docs (mkdocs, served under /docs/)
         run: mkdocs build -f docs-site/mkdocs.yml --verbose
+
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: landing/package-lock.json
+
+      - name: Install Landing Dependencies
+        working-directory: landing
+        run: npm ci
+
+      - name: Check Landing (astro check, tsc, prettier)
+        working-directory: landing
+        run: npm run check
+
+      - name: Build Landing (Astro, served at /)
+        working-directory: landing
+        env:
+          # Read-only token only raises the GitHub API rate limit for the star count.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Public site token for Cloudflare Web Analytics; empty = no beacon.
+          PUBLIC_CF_BEACON_TOKEN: ${{ vars.CF_WEB_ANALYTICS_TOKEN }}
+        run: npm run build
+
+      - name: Assemble Site
+        run: |
+          mkdir -p _site/docs
+          cp -r landing/dist/. _site/
+          cp -r docs-site/site/. _site/docs/
 
       - name: Configure Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
@@ -58,7 +97,7 @@ jobs:
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
-          path: docs-site/site
+          path: _site
 
   deploy:
     needs: build

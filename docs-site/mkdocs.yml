@@ -1,5 +1,6 @@
 site_name: Awesome RAG Production
-site_url: https://yigtwxx.github.io/awesome-rag-production/
+# The landing page (landing/) owns the site root; mkdocs builds into /docs/.
+site_url: https://yigtwxx.github.io/awesome-rag-production/docs/
 site_description: >-
   A curated, evidence-cited list of battle-tested tools, frameworks, and best
   practices for building scalable, production-grade Retrieval-Augmented
@@ -22,6 +23,8 @@ theme:
   # Holds overrides/main.html, which injects keywords, JSON-LD structured data,
   # and the Google Search Console verification tag into every page <head>.
   custom_dir: overrides
+  # Same tab icon as the landing page (overrides/assets is copied as-is).
+  favicon: assets/favicon.svg
   icon:
     repo: fontawesome/brands/github
   features:
@@ -104,6 +107,8 @@ validation:
     not_found: warn
 
 extra:
+  # Header logo links back to the landing page instead of the docs home.
+  homepage: https://yigtwxx.github.io/awesome-rag-production/
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/Yigtwxx/awesome-rag-production
