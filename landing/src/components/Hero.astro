@@ -1,0 +1,814 @@
+---
+import { catalog } from '../lib/catalog';
+import { docsHref } from '../lib/site';
+
+/** Category size by exact README heading; fails the build if a heading moves. */
+function count(name: string): number {
+  const category = catalog.categories.find((c) => c.name === name);
+  if (!category) throw new Error(`Hero: category "${name}" not in catalog`);
+  return category.count;
+}
+
+const { tools, categories } = catalog.totals;
+
+const stages = [
+  {
+    name: 'Ingest',
+    text: `${count('Data Ingestion & Parsing')} parsers and ${count('Chunking & Document Processing')} chunkers turn PDFs, HTML and scans into clean, structured text.`,
+  },
+  {
+    name: 'Index',
+    text: `${count('Embedding Models')} embedding models and ${count('Vector Databases')} vector databases turn every chunk into something you can search.`,
+  },
+  {
+    name: 'Retrieve',
+    text: `${count('Retrieval & Reranking')} retrievers and rerankers, plus ${count('Query Transformation & Routing')} query routers, pick the few chunks that answer the question.`,
+  },
+  {
+    name: 'Generate',
+    text: `${count('Deployment & Serving')} serving engines, ${count('Evaluation & Benchmarking')} evaluators and ${count('Observability & Tracing')} tracing tools keep answers fast, grounded and observable.`,
+  },
+];
+const pad = (n: number): string => String(n).padStart(2, '0');
+---
+
+<section
+  class="hero"
+  aria-labelledby="hero-title"
+  data-stages={JSON.stringify(stages)}
+>
+  <canvas class="hero__canvas" aria-hidden="true"></canvas>
+
+  <div class="hero__guides" aria-hidden="true">
+    <svg viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="96" class="g g--dash"></circle>
+      <circle cx="100" cy="100" r="70" class="g"></circle>
+      <circle cx="100" cy="100" r="30" class="g g--dash"></circle>
+      <line x1="100" y1="-60" x2="100" y2="260" class="g"></line>
+      <line x1="-120" y1="100" x2="320" y2="100" class="g g--dash"></line>
+      <line x1="10" y1="10" x2="190" y2="190" class="g g--faint"></line>
+      <line x1="190" y1="10" x2="10" y2="190" class="g g--faint"></line>
+    </svg>
+  </div>
+  <div class="hero__rules" aria-hidden="true">
+    <i></i>
+    <i></i>
+  </div>
+
+  <div class="hero__layout">
+    <div class="hero__copy">
+      <h1 id="hero-title" class="hero__title">
+        <span class="hero__line">From scattered documents</span>
+        <span class="hero__line serif">to grounded answers.</span>
+      </h1>
+      <p class="hero__lede mono">
+        A curated list of {tools} production-tested tools across {categories}{' '}
+        categories, three reference architectures, and source-tagged benchmarks
+        for every stage in between.
+      </p>
+      <div class="hero__actions">
+        <a class="btn btn--light brackets" href={docsHref()}>
+          Browse the list
+          <span class="btn__arrow" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <path
+                d="M3 8h9m0 0L8.5 4.5M12 8l-3.5 3.5"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+            </svg>
+          </span>
+        </a>
+      </div>
+    </div>
+
+    <p class="hero__note mono">
+      Every entry is picked for production use. Every benchmark number carries
+      the source it came from.
+    </p>
+
+    <div class="hero__stage hud">
+      <p class="hero__counter" aria-hidden="true">
+        <span class="hero__counter-window">
+          <span class="hero__counter-current">01</span>
+        </span>
+        <span class="hero__counter-total">/{pad(stages.length)}</span>
+      </p>
+      <div class="hero__stage-text" aria-live="polite">
+        <h2 class="hero__stage-title">{stages[0]?.name}</h2>
+        <p class="hero__stage-desc mono">{stages[0]?.text}</p>
+      </div>
+      <div class="hero__tabs" role="tablist" aria-label="RAG pipeline stage">
+        {stages.map((stage, i) => (
+          <button
+            class="hero__tab"
+            type="button"
+            role="tab"
+            id={`stage-tab-${i}`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            tabindex={i === 0 ? 0 : -1}
+            data-stage={i}
+          >
+            <span class="hero__tab-bar" aria-hidden="true">
+              <i />
+            </span>
+            <span class="hero__tab-num">{pad(i + 1)}</span>
+            <span class="hero__tab-name">{stage.name}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <div class="hero__arrows">
+      <button
+        class="hero__arrow brackets"
+        type="button"
+        data-step="-1"
+        aria-label="Previous stage"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M13 8H4m0 0l3.5-3.5M4 8l3.5 3.5"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          ></path>
+        </svg>
+      </button>
+      <button
+        class="hero__arrow brackets"
+        type="button"
+        data-step="1"
+        aria-label="Next stage"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M3 8h9m0 0L8.5 4.5M12 8l-3.5 3.5"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          ></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    --fx: 60%;
+    --fy: 47%;
+    position: relative;
+    isolation: isolate;
+    min-height: max(100svh, 46rem);
+    overflow: hidden;
+    background: var(--night);
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    background: linear-gradient(90deg, rgb(2 4 11 / 0.5), transparent 46%);
+  }
+
+  /* Melts the hero's sky into the page background (no hard edge). */
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    z-index: -1;
+    height: 22vh;
+    pointer-events: none;
+    background: linear-gradient(to bottom, transparent, #050f2b);
+  }
+
+  .hero__canvas {
+    position: absolute;
+    inset: 0;
+    z-index: -3;
+    width: 100%;
+    height: 100%;
+  }
+
+  :global(.hero--fallback) .hero__canvas {
+    display: none;
+  }
+
+  :global(.hero--fallback) {
+    background:
+      radial-gradient(
+        18% 26% at var(--fx) var(--fy),
+        rgb(127 211 255 / 0.28),
+        transparent 70%
+      ),
+      radial-gradient(
+        40% 55% at var(--fx) var(--fy),
+        rgb(237 240 245 / 0.08),
+        transparent 72%
+      ),
+      linear-gradient(to bottom, #07133a, var(--night));
+  }
+
+  /* Construction lines centred on the sculpture. */
+  .hero__guides {
+    position: absolute;
+    left: var(--fx);
+    top: var(--fy);
+    z-index: -2;
+    width: min(92svh, 64vw);
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .hero__guides svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .g {
+    fill: none;
+    stroke: rgb(237 240 245 / 0.16);
+    stroke-width: 0.25;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .g--dash {
+    stroke-dasharray: 3 5;
+    animation: guide-drift 40s linear infinite;
+  }
+
+  .g--faint {
+    stroke: rgb(237 240 245 / 0.07);
+  }
+
+  @keyframes guide-drift {
+    to {
+      stroke-dashoffset: -160;
+    }
+  }
+
+  /* Two full-height column rules frame the copy column like a layout grid. */
+  .hero__rules {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+  }
+
+  .hero__rules i {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      var(--line) 15%,
+      var(--line) 85%,
+      transparent
+    );
+  }
+
+  .hero__rules i:first-child {
+    left: calc(var(--gutter) + min(36rem, 38vw));
+  }
+
+  .hero__rules i:last-child {
+    right: calc(var(--gutter) + 22rem);
+  }
+
+  .hero__layout {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
+    grid-template-rows: auto 1fr auto;
+    min-height: inherit;
+    padding: 7.5rem var(--gutter) 2.25rem;
+    gap: 2rem;
+  }
+
+  .hero__copy {
+    grid-column: 1;
+    grid-row: 1 / -1;
+    align-self: center;
+    max-width: min(40rem, 50vw);
+  }
+
+  /* Hidden until GSAP animates it; the failsafe reveals it if JS stalls. */
+  :global(html.js) .hero__copy,
+  :global(html.js) .hero__stage,
+  :global(html.js) .hero__note,
+  :global(html.js) .hero__arrows {
+    opacity: 0;
+    animation: hero-failsafe 0.01s linear 3s forwards;
+  }
+
+  @keyframes hero-failsafe {
+    to {
+      opacity: 1;
+    }
+  }
+
+  .hero__title {
+    font-size: var(--step-4);
+    line-height: 0.95;
+  }
+
+  .hero__line {
+    display: block;
+  }
+
+  .hero__line.serif {
+    margin-top: 0.06em;
+    font-size: 1.08em;
+    color: var(--ice-hot);
+  }
+
+  .hero__lede {
+    max-width: 30rem;
+    margin-top: 1.75rem;
+    color: rgb(237 240 245 / 0.72);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2.25rem;
+  }
+
+  .hero__note {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: start;
+    max-width: 17rem;
+    justify-self: end;
+    color: var(--mist);
+    text-align: right;
+  }
+
+  .hero__stage {
+    grid-column: 2;
+    grid-row: 3;
+    justify-self: end;
+    width: 100%;
+    max-width: 24rem;
+  }
+
+  .hero__counter {
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-end;
+    gap: 0.3rem;
+    font: italic 400 clamp(3.4rem, 5vw, 4.6rem) / 0.82 var(--font-serif);
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Padding (cancelled by margins) keeps italic overhangs inside the clip. */
+  .hero__counter-window {
+    display: inline-block;
+    overflow: hidden;
+    padding: 0.1em 0.18em 0.14em 0.06em;
+    margin: -0.1em -0.18em -0.14em -0.06em;
+  }
+
+  .hero__counter-current {
+    display: inline-block;
+  }
+
+  .hero__counter-total {
+    color: var(--mist);
+    font: 500 0.78rem/1 var(--font-mono);
+    font-style: normal;
+    letter-spacing: 0.04em;
+  }
+
+  .hero__stage-text {
+    min-height: 6.6rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .hero__stage-title {
+    font-size: var(--step-1);
+  }
+
+  .hero__stage-desc {
+    margin-top: 0.4rem;
+    color: var(--mist);
+  }
+
+  .hero__tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.9rem;
+    margin-top: 1.4rem;
+  }
+
+  /* Editorial stage index: a hairline that fills while the stage plays. */
+  .hero__tab {
+    display: grid;
+    gap: 0.25rem;
+    padding: 0 0 0.2rem;
+    border: 0;
+    background: none;
+    color: var(--dim);
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+    transition: color 250ms ease;
+  }
+
+  .hero__tab:hover {
+    color: var(--mist);
+  }
+
+  .hero__tab[aria-selected='true'] {
+    color: var(--chalk);
+  }
+
+  .hero__tab-bar {
+    position: relative;
+    display: block;
+    height: 2px;
+    margin-bottom: 0.55rem;
+    border-radius: 2px;
+    background: rgb(237 240 245 / 0.14);
+    overflow: hidden;
+  }
+
+  .hero__tab-bar i {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, var(--ice), var(--ice-hot));
+    box-shadow: 0 0 10px var(--ice);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  .hero__tab[aria-selected='true'] .hero__tab-bar i {
+    transform: scaleX(1);
+  }
+
+  .hero__tab-num {
+    font: 500 0.68rem var(--font-mono);
+    color: inherit;
+    opacity: 0.8;
+  }
+
+  .hero__tab[aria-selected='true'] .hero__tab-num {
+    color: var(--ice);
+    opacity: 1;
+  }
+
+  .hero__tab-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .hero__arrows {
+    position: absolute;
+    left: var(--gutter);
+    bottom: 2.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  /* Square controls framed by viewfinder corners, ice on hover. */
+  .hero__arrow {
+    --bracket: rgb(237 240 245 / 0.7);
+    --bracket-inset: -1px;
+    --bracket-size: 7px;
+    display: grid;
+    place-items: center;
+    width: 2.8rem;
+    height: 2.8rem;
+    border: 1px solid rgb(237 240 245 / 0.12);
+    background: rgb(3 8 23 / 0.35);
+    color: var(--chalk);
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+    transition:
+      border-color 250ms ease,
+      background-color 250ms ease;
+  }
+
+  .hero__arrow:hover {
+    --bracket: var(--ice);
+    --bracket-inset: -4px;
+    border-color: rgb(127 211 255 / 0.35);
+    background: rgb(127 211 255 / 0.1);
+  }
+
+  @media (max-width: 60rem) {
+    .hero {
+      --fx: 50%;
+      --fy: 23%;
+    }
+
+    .hero__guides {
+      width: min(110vw, 34rem);
+    }
+
+    .hero::before {
+      background: linear-gradient(0deg, rgb(3 5 10 / 0.7), transparent 55%);
+    }
+
+    .hero__rules {
+      display: none;
+    }
+
+    .hero__layout {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto;
+      padding-top: calc(50svh - 2rem);
+      gap: 2.5rem;
+    }
+
+    .hero__copy {
+      grid-row: auto;
+      max-width: none;
+    }
+
+    .hero__note {
+      display: none;
+    }
+
+    .hero__stage {
+      grid-column: 1;
+      grid-row: auto;
+      justify-self: stretch;
+      max-width: none;
+    }
+
+    .hero__arrows {
+      position: static;
+    }
+
+    .hero__counter {
+      justify-content: flex-start;
+    }
+  }
+</style>
+
+<script>
+  import { getMotion, liftText } from '../lib/motion';
+  import { createLatticeScene } from '../lib/lattice-scene';
+
+  interface Stage {
+    name: string;
+    text: string;
+  }
+
+  const hero = document.querySelector<HTMLElement>('.hero');
+  const canvas = hero?.querySelector<HTMLCanvasElement>('.hero__canvas');
+
+  if (hero && canvas) {
+    const { gsap, ScrollTrigger, reduced } = getMotion();
+    const stages = JSON.parse(hero.dataset['stages'] ?? '[]') as Stage[];
+    const tabs = [...hero.querySelectorAll<HTMLButtonElement>('.hero__tab')];
+    const title = hero.querySelector<HTMLElement>('.hero__stage-title')!;
+    const desc = hero.querySelector<HTMLElement>('.hero__stage-desc')!;
+    const counter = hero.querySelector<HTMLElement>('.hero__counter-current')!;
+    const bars = tabs.map((tab) =>
+      tab.querySelector<HTMLElement>('.hero__tab-bar i')!,
+    );
+    const barFor = (i: number): HTMLElement => bars[i] ?? bars[0]!;
+    const reveal = hero.querySelectorAll<HTMLElement>(
+      '.hero__copy, .hero__stage, .hero__note, .hero__arrows',
+    );
+
+    const small = window.innerWidth < 760;
+    const scene = createLatticeScene(canvas, small ? 42_000 : 96_000);
+    if (!scene) hero.classList.add('hero--fallback');
+
+    const layout = (): void => {
+      const portrait = window.matchMedia('(max-width: 60rem)').matches;
+      const style = getComputedStyle(hero);
+      const fx = parseFloat(style.getPropertyValue('--fx')) / 100;
+      const fy = parseFloat(style.getPropertyValue('--fy')) / 100;
+      scene?.setLayout(fx * 2 - 1, 1 - fy * 2, portrait ? 0.5 : 1);
+    };
+    layout();
+    window.addEventListener('resize', layout);
+
+    // --- stage state ---------------------------------------------------------
+    const tween = { stage: 0 };
+    let current = 0;
+    let autoplay: gsap.core.Tween | undefined;
+
+    const renderText = (index: number, animate: boolean): void => {
+      const stage = stages[index];
+      if (!stage) return;
+      const swap = (): void => {
+        title.textContent = stage.name;
+        desc.textContent = stage.text;
+        counter.textContent = String(index + 1).padStart(2, '0');
+      };
+      if (!animate) {
+        swap();
+        return;
+      }
+      gsap
+        .timeline()
+        .to([title, desc], {
+          autoAlpha: 0,
+          y: -8,
+          duration: 0.25,
+          ease: 'power2.in',
+        })
+        .to(counter, { yPercent: -130, duration: 0.3, ease: 'power2.in' }, 0)
+        .add(swap)
+        .fromTo(
+          counter,
+          { yPercent: 130 },
+          { yPercent: 0, duration: 0.55, ease: 'expo.out' },
+        )
+        .fromTo(
+          [title, desc],
+          { autoAlpha: 0, y: 10 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.5,
+            ease: 'power3.out',
+            stagger: 0.06,
+          },
+          '<',
+        );
+    };
+
+    const goTo = (index: number, options: { user?: boolean } = {}): void => {
+      const next = (index + stages.length) % stages.length;
+      tabs.forEach((tab, i) => {
+        const selected = i === next;
+        tab.setAttribute('aria-selected', String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+      });
+      if (next !== current || !options.user) renderText(next, !reduced);
+      current = next;
+
+      if (scene) {
+        if (reduced) {
+          scene.setStage(next);
+        } else {
+          gsap.to(tween, {
+            stage: next,
+            duration: next === 0 ? 1.6 : 2.4,
+            ease: 'power2.inOut',
+            overwrite: true,
+            onUpdate: () => scene.setStage(tween.stage),
+          });
+        }
+      }
+      if (options.user) stopAutoplay();
+    };
+
+    const stopAutoplay = (): void => {
+      autoplay?.kill();
+      autoplay = undefined;
+      bars.forEach((bar, i) =>
+        gsap.set(bar, { scaleX: i === current ? 1 : 0 }),
+      );
+    };
+
+    const scheduleNext = (): void => {
+      if (reduced) return;
+      bars.forEach((bar, i) => {
+        if (i !== current) gsap.set(bar, { scaleX: 0 });
+      });
+      autoplay = gsap.fromTo(
+        barFor(current),
+        { scaleX: 0 },
+        {
+          scaleX: 1,
+          duration: 6.5,
+          ease: 'none',
+          onComplete: () => {
+            goTo(current + 1);
+            scheduleNext();
+          },
+        },
+      );
+    };
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => goTo(i, { user: true }));
+      tab.addEventListener('keydown', (event) => {
+        const delta =
+          event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
+        if (!delta) return;
+        event.preventDefault();
+        const target = (i + delta + tabs.length) % tabs.length;
+        goTo(target, { user: true });
+        tabs[target]?.focus();
+      });
+    });
+    hero
+      .querySelectorAll<HTMLButtonElement>('.hero__arrow')
+      .forEach((button) => {
+        button.addEventListener('click', () =>
+          goTo(current + Number(button.dataset['step']), { user: true }),
+        );
+      });
+
+    // --- pointer + visibility ----------------------------------------------------
+    if (scene) {
+      hero.addEventListener('pointermove', (event) => {
+        const rect = hero.getBoundingClientRect();
+        scene.setPointer(
+          ((event.clientX - rect.left) / rect.width) * 2 - 1,
+          ((event.clientY - rect.top) / rect.height) * 2 - 1,
+        );
+      });
+
+      if (reduced) {
+        scene.setStage(1);
+        scene.start(true);
+      } else {
+        let onScreen = true;
+        ScrollTrigger.create({
+          trigger: hero.parentElement ?? hero,
+          start: 'top bottom',
+          end: 'bottom top',
+          onToggle: (self) => {
+            onScreen = self.isActive;
+            if (onScreen && !document.hidden) scene.start();
+            else scene.stop();
+          },
+        });
+        document.addEventListener('visibilitychange', () => {
+          if (document.hidden) {
+            scene.stop();
+            autoplay?.pause();
+          } else {
+            if (onScreen) scene.start();
+            autoplay?.resume();
+          }
+        });
+        scene.start();
+      }
+    }
+
+    // --- intro -----------------------------------------------------------------------
+    reveal.forEach((el) => {
+      el.style.animation = 'none';
+      el.style.opacity = '1';
+    });
+
+    if (reduced) {
+      goTo(1);
+    } else {
+      gsap
+        .timeline({ delay: 0.3 })
+        .add(
+          liftText('.hero__line', {
+            by: 'words',
+            duration: 1.2,
+            stagger: 0.06,
+          }),
+        )
+        .from(
+          '.hero__lede, .hero__actions, .hero__note, .hero__stage, .hero__arrows',
+          {
+            autoAlpha: 0,
+            y: 14,
+            duration: 0.9,
+            ease: 'power3.out',
+            stagger: 0.08,
+          },
+          '-=0.8',
+        )
+        // Pages assemble into the lattice: the opening move of the story.
+        .add(() => {
+          goTo(1);
+          scheduleNext();
+        }, 1.6);
+    }
+  }
+</script>

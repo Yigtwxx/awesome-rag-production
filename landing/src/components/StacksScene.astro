@@ -1,0 +1,694 @@
+---
+import { catalog } from '../lib/catalog';
+import { GROUPS } from '../lib/groups';
+import { docsHref } from '../lib/site';
+
+// Layer roles -> pipeline group (colour) and depth in the atom (inner first).
+const ROLE_RULES: { re: RegExp; group: string; depth: number }[] = [
+  { re: /llm|serv|model/i, group: 'serve', depth: 0 },
+  { re: /vector|index|embed/i, group: 'index', depth: 1 },
+  { re: /rerank|retriev/i, group: 'retrieve', depth: 2 },
+  { re: /eval|trac|monitor|observ|guard/i, group: 'operate', depth: 3 },
+];
+const ruleFor = (role: string) =>
+  ROLE_RULES.find((r) => r.re.test(role)) ?? { group: 'orchestrate', depth: 2 };
+const colorOf = (id: string): string =>
+  GROUPS.find((g) => g.id === id)?.color ?? '#7d8796';
+
+const tiers = catalog.architectures.map((tier) => ({
+  name: tier.name.replace(/^The\s+/, '').replace(/\s+Stack$/, ''),
+  tagline: tier.tagline,
+  goal: tier.goal,
+  layers: [...tier.stack]
+    .map((item) => ({ ...item, ...ruleFor(item.role) }))
+    .sort((a, b) => a.depth - b.depth)
+    .map((item) => ({
+      role: item.role,
+      tools: item.tools,
+      color: colorOf(item.group),
+    })),
+}));
+
+// Scale ladder from the vector-database guide ("50M" -> 5e7, "billions" -> ∞).
+function quantity(text: string): number {
+  if (/billion/i.test(text)) return Infinity;
+  const m = text.match(/([\d.]+)\s*([KMB])?/i);
+  if (!m) throw new Error(`Stacks: cannot read a quantity from "${text}"`);
+  const unit = (m[2] ?? '').toUpperCase();
+  return (
+    parseFloat(m[1]!) *
+    (unit === 'K' ? 1e3 : unit === 'M' ? 1e6 : unit === 'B' ? 1e9 : 1)
+  );
+}
+const ladder = catalog.scaleLadder.map((tier) => {
+  const range = tier.range.trim();
+  if (range.startsWith('<'))
+    return {
+      lo: 0,
+      hi: quantity(range),
+      choices: tier.choices,
+      notes: tier.notes,
+    };
+  const [lo = '0', hi = 'billions'] = range.split(/[–-]/);
+  const top = quantity(hi);
+  return {
+    lo: quantity(lo),
+    hi: Number.isFinite(top) ? top : null,
+    choices: tier.choices,
+    notes: tier.notes,
+  };
+});
+const pad = (n: number): string => String(n).padStart(2, '0');
+const payload = { tiers, ladder };
+---
+
+<section class="scene stacks" aria-labelledby="stacks-title">
+  <canvas class="scene__canvas" aria-hidden="true"></canvas>
+  <div class="scene__labels stacks__labels" aria-hidden="true"></div>
+
+  <div class="scene__layout">
+    <div class="scene__copy">
+      <h1 id="stacks-title" class="scene__title">
+        Three stacks,
+        <span class="serif tone-orange">from laptop to the 1%.</span>
+      </h1>
+      <p class="scene__lede mono">
+        Each reference architecture as a cutaway atom: the model at the core,
+        retrieval around it, evaluation and monitoring wrapping everything.
+      </p>
+
+      <div
+        class="stacks__tabs"
+        role="tablist"
+        aria-label="Reference architecture"
+      >
+        {tiers.map((tier, i) => (
+          <button
+            class="stacks__tab brackets"
+            type="button"
+            role="tab"
+            aria-selected={i === 0 ? 'true' : 'false'}
+            tabindex={i === 0 ? 0 : -1}
+            data-tier={i}
+          >
+            <span class="mono">{pad(i + 1)}</span>
+            <span class="stacks__tab-name">{tier.name}</span>
+            <span class="serif stacks__tab-tag">{tier.tagline}</span>
+          </button>
+        ))}
+      </div>
+
+      <p class="stacks__goal">{tiers[0]?.goal}</p>
+      <ol class="stacks__layers">
+        {tiers[0]?.layers.map((layer) => (
+          <li>
+            <i style={`background:${layer.color}`} />
+            <span class="mono">{layer.role}</span>
+            <span>{layer.tools.join(', ')}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+
+    <p class="scene__note mono">
+      Drag the vector count: the stack that fits that scale lights up, with the
+      shortlist from the vector database guide.
+    </p>
+
+    <div class="scene__panel hud stacks__panel">
+      <p class="scene__counter">
+        <span class="stacks__current">01</span>
+        <small>/{pad(tiers.length)}</small>
+      </p>
+      <div class="scene__rule">
+        <p class="stacks__vectors">
+          <span class="stacks__count">25M</span>
+          <span class="serif">vectors</span>
+        </p>
+        <label class="visually-hidden" for="stacks-dial">
+          Number of vectors (log scale)
+        </label>
+        <input
+          id="stacks-dial"
+          class="stacks__dial"
+          type="range"
+          min="4"
+          max="10"
+          step="0.01"
+          value="7.4"
+        />
+        <div class="stacks__ends mono" aria-hidden="true">
+          <span>10K</span>
+          <span>1M</span>
+          <span>100M</span>
+          <span>10B</span>
+        </div>
+        <p class="stacks__memory mono">
+          Raw at 1,536 dims (float32):{' '}
+          <strong class="stacks__bytes">154 GB</strong>
+        </p>
+        <ul class="stacks__chips" aria-live="polite"></ul>
+        <a
+          class="stacks__more mono"
+          href={docsHref('vector-database-comparison/')}
+        >
+          Full vector database guide
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script
+    type="application/json"
+    class="stacks__data"
+    set:html={JSON.stringify(payload)}
+  />
+</section>
+
+<style>
+  .stacks__tabs {
+    display: grid;
+    gap: 0.5rem;
+    max-width: 26rem;
+    margin-top: 1.6rem;
+  }
+
+  .stacks__tab {
+    --bracket: transparent;
+    display: grid;
+    grid-template-columns: 2rem auto 1fr;
+    align-items: baseline;
+    gap: 0.6rem;
+    padding: 0.65rem 0.9rem;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    background: rgb(3 8 23 / 0.55);
+    color: var(--mist);
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+    transition:
+      background-color 200ms ease,
+      color 200ms ease;
+  }
+
+  .stacks__tab:hover {
+    background: rgb(10 29 69 / 0.6);
+  }
+
+  .stacks__tab[aria-selected='true'] {
+    --bracket: var(--chalk);
+    background: rgb(10 29 69 / 0.75);
+    color: var(--chalk);
+  }
+
+  .stacks__tab-name {
+    color: var(--chalk);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .stacks__tab-tag {
+    justify-self: end;
+    color: var(--orange);
+    font-size: 1.1rem;
+  }
+
+  .stacks__goal {
+    max-width: 26rem;
+    margin-top: 1.2rem;
+    color: rgb(237 240 245 / 0.8);
+  }
+
+  .stacks__layers {
+    display: grid;
+    gap: 0.35rem;
+    max-width: 26rem;
+    margin: 0.9rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.86rem;
+  }
+
+  .stacks__layers :global(li) {
+    display: grid;
+    grid-template-columns: 9px 7rem 1fr;
+    align-items: baseline;
+    gap: 0.6rem;
+    color: var(--chalk);
+  }
+
+  .stacks__layers :global(li i) {
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    align-self: center;
+  }
+
+  .stacks__layers :global(li .mono) {
+    color: var(--mist);
+  }
+
+  .stacks__vectors {
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+
+  .stacks__count {
+    font-size: 2.2rem;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stacks__vectors .serif {
+    color: var(--ice-hot);
+    font-size: 1.4rem;
+  }
+
+  .stacks__dial {
+    width: 100%;
+    height: 1.8rem;
+    margin: 0.4rem 0 0;
+    background: transparent;
+    appearance: none;
+    cursor: ew-resize;
+  }
+
+  .stacks__dial::-webkit-slider-runnable-track {
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      var(--ice) var(--fill, 57%),
+      var(--line-strong) var(--fill, 57%)
+    );
+  }
+
+  .stacks__dial::-moz-range-track {
+    height: 2px;
+    background: var(--line-strong);
+  }
+
+  .stacks__dial::-moz-range-progress {
+    height: 2px;
+    background: var(--ice);
+  }
+
+  /* Thumb: a slim lit needle instead of a knob. */
+  .stacks__dial::-webkit-slider-thumb {
+    width: 5px;
+    height: 20px;
+    margin-top: -9px;
+    border: 0;
+    background: var(--ice-hot);
+    box-shadow:
+      0 0 0 3px rgb(2 4 11 / 0.9),
+      0 0 18px rgb(127 211 255 / 0.8);
+    appearance: none;
+  }
+
+  .stacks__dial::-moz-range-thumb {
+    width: 5px;
+    height: 20px;
+    border: 0;
+    border-radius: 0;
+    background: var(--ice-hot);
+    box-shadow:
+      0 0 0 3px rgb(2 4 11 / 0.9),
+      0 0 18px rgb(127 211 255 / 0.8);
+  }
+
+  .stacks__ends {
+    display: flex;
+    justify-content: space-between;
+    color: var(--dim);
+    font-size: 0.68rem;
+  }
+
+  .stacks__memory {
+    margin-top: 0.7rem;
+    color: var(--mist);
+    text-align: right;
+  }
+
+  .stacks__memory strong {
+    color: var(--sun);
+    font-weight: 500;
+  }
+
+  .stacks__chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.4rem;
+    min-height: 2.2rem;
+    margin: 0.8rem 0 0.6rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .stacks__chips :global(li) {
+    padding: 0.35rem 0.75rem;
+    border-left: 2px solid rgb(127 211 255 / 0.45);
+    background: rgb(3 8 23 / 0.72);
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .stacks__chips :global(li:first-child) {
+    border-left-color: var(--ice-hot);
+    background: rgb(127 211 255 / 0.16);
+    color: var(--ice-hot);
+  }
+
+  .stacks__more {
+    display: block;
+    color: var(--ice);
+    text-align: right;
+    text-underline-offset: 0.3em;
+  }
+
+  .stacks__labels :global(.stack-label) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--chalk);
+    font: 600 0.78rem/1.2 var(--font-sans);
+    white-space: nowrap;
+    will-change: transform;
+  }
+
+  .stacks__labels :global(.stack-label i) {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    box-shadow: 0 0 10px currentColor;
+  }
+
+  .stacks__labels :global(.stack-label b) {
+    width: 2.2rem;
+    height: 1px;
+    background: var(--line-strong);
+  }
+
+  .stacks__labels :global(.stack-label span) {
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 4px;
+    background: rgb(2 4 11 / 0.75);
+  }
+
+  .stacks__labels :global(.stack-label em) {
+    margin-right: 0.35rem;
+    color: var(--mist);
+    font: 500 0.7rem var(--font-mono);
+    font-style: normal;
+  }
+
+  @media (max-width: 60rem) {
+    .stacks__vectors,
+    .stacks__chips {
+      justify-content: flex-start;
+    }
+
+    .stacks__memory,
+    .stacks__more {
+      text-align: left;
+    }
+  }
+</style>
+
+<script>
+  import { getMotion, liftText } from '../lib/motion';
+  import { createSpace } from '../lib/space';
+  import { createStackScene } from '../lib/stack-scene';
+
+  interface Layer {
+    role: string;
+    tools: string[];
+    color: string;
+  }
+  interface Payload {
+    tiers: { name: string; tagline: string; goal: string; layers: Layer[] }[];
+    ladder: {
+      lo: number;
+      hi: number | null;
+      choices: string[];
+      notes: string;
+    }[];
+  }
+
+  const section = document.querySelector<HTMLElement>('.stacks');
+  const dataEl = section?.querySelector<HTMLScriptElement>('.stacks__data');
+  const canvas = section?.querySelector<HTMLCanvasElement>('.scene__canvas');
+
+  if (section && dataEl && canvas) {
+    const { gsap, ScrollTrigger, reduced } = getMotion();
+    const data = JSON.parse(dataEl.textContent ?? '{}') as Payload;
+    const tabs = [
+      ...section.querySelectorAll<HTMLButtonElement>('.stacks__tab'),
+    ];
+    const goal = section.querySelector<HTMLElement>('.stacks__goal')!;
+    const layersEl =
+      section.querySelector<HTMLOListElement>('.stacks__layers')!;
+    const currentEl = section.querySelector<HTMLElement>('.stacks__current')!;
+    const dial = section.querySelector<HTMLInputElement>('.stacks__dial')!;
+    const countEl = section.querySelector<HTMLElement>('.stacks__count')!;
+    const bytesEl = section.querySelector<HTMLElement>('.stacks__bytes')!;
+    const chips = section.querySelector<HTMLUListElement>('.stacks__chips')!;
+    const labelsEl = section.querySelector<HTMLElement>('.stacks__labels')!;
+
+    const space = createSpace(canvas, { fov: 34 });
+    const scene = space
+      ? createStackScene(
+          space,
+          data.tiers.map((t) => ({ layers: t.layers.map((l) => l.color) })),
+        )
+      : undefined;
+    if (!space) section.classList.add('scene--fallback');
+
+    const place = (): void => {
+      if (!space || !scene) return;
+      const narrow = window.matchMedia('(max-width: 60rem)').matches;
+      scene.setLayout(
+        narrow ? 0 : 0.7,
+        narrow ? 0.95 : 0.05,
+        narrow ? 0.62 : 1.12,
+      );
+      space.setFocus(narrow ? 0.5 : 0.6, narrow ? 0.78 : 0.5);
+    };
+    place();
+    window.addEventListener('resize', place);
+
+    // --- labels anchored to the shells ---------------------------------------------
+    let labels: HTMLElement[] = [];
+    const buildLabels = (tier: number): void => {
+      labelsEl.replaceChildren();
+      labels = (data.tiers[tier]?.layers ?? []).map((layer) => {
+        const el = document.createElement('div');
+        el.className = 'stack-label';
+        el.style.color = layer.color;
+        const dot = document.createElement('i');
+        dot.style.background = layer.color;
+        const line = document.createElement('b');
+        const text = document.createElement('span');
+        const role = document.createElement('em');
+        role.textContent = layer.role;
+        text.style.color = 'var(--chalk)';
+        text.append(role, layer.tools.join(' / '));
+        el.append(dot, line, text);
+        labelsEl.append(el);
+        return el;
+      });
+      if (!reduced)
+        gsap.from(labels, {
+          opacity: 0,
+          x: 12,
+          duration: 0.6,
+          stagger: 0.08,
+          delay: 0.3,
+        });
+    };
+    space?.onFrame(() => {
+      if (!scene) return;
+      const anchors = scene.anchors();
+      labels.forEach((el, i) => {
+        const p = anchors[i];
+        if (!p) return;
+        el.style.visibility = p.behind ? 'hidden' : 'visible';
+        // Keep the whole label on screen (long tool names near the edge).
+        const maxX = (space?.width ?? window.innerWidth) - el.offsetWidth - 16;
+        const x = Math.min(p.x - 4, maxX);
+        el.style.transform = `translate(${x}px, ${p.y}px) translate(0, -50%)`;
+      });
+    });
+
+    // --- tiers -----------------------------------------------------------------------------
+    let tier = -1;
+    const selectTier = (next: number, immediate = false): void => {
+      if (next === tier) return;
+      tier = next;
+      const t = data.tiers[next];
+      if (!t) return;
+      tabs.forEach((tab, i) => {
+        tab.setAttribute('aria-selected', String(i === next));
+        tab.tabIndex = i === next ? 0 : -1;
+      });
+      currentEl.textContent = String(next + 1).padStart(2, '0');
+      goal.textContent = t.goal;
+      layersEl.replaceChildren(
+        ...t.layers.map((layer) => {
+          const li = document.createElement('li');
+          const swatch = document.createElement('i');
+          swatch.style.background = layer.color;
+          const role = document.createElement('span');
+          role.className = 'mono';
+          role.textContent = layer.role;
+          const tools = document.createElement('span');
+          tools.textContent = layer.tools.join(', ');
+          li.append(swatch, role, tools);
+          return li;
+        }),
+      );
+      scene?.select(next, immediate || reduced);
+      buildLabels(next);
+      if (!reduced && !immediate) {
+        gsap.fromTo(
+          [goal, layersEl],
+          { opacity: 0, y: 8 },
+          { opacity: 1, y: 0, duration: 0.5, stagger: 0.06 },
+        );
+      }
+    };
+
+    // --- the vector-count dial drives the tier -----------------------------------
+    const compact = new Intl.NumberFormat('en-US', {
+      notation: 'compact',
+      maximumFractionDigits: 1,
+    });
+    const words = new Intl.NumberFormat('en-US', {
+      notation: 'compact',
+      compactDisplay: 'long',
+      maximumFractionDigits: 1,
+    });
+    const formatBytes = (n: number): string => {
+      const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+      let i = 0;
+      while (n >= 1000 && i < units.length - 1) {
+        n /= 1000;
+        i++;
+      }
+      return `${n >= 100 ? Math.round(n) : n.toFixed(1)} ${units[i]}`;
+    };
+    // Tier by scale: under 1M a laptop stack; up to 50M the managed mid-scale
+    // stack; beyond that the distributed enterprise stack.
+    const tierForCount = (count: number): number =>
+      count < 1e6 ? 0 : count < 5e7 ? 1 : 2;
+    const REPRESENTATIVE = [5.3, 7.2, 9.0];
+    let rung = -1;
+    const updateDial = (fromTabs = false): void => {
+      const log = parseFloat(dial.value);
+      const count = Math.pow(10, log);
+      countEl.textContent = compact.format(count);
+      dial.setAttribute('aria-valuetext', `${words.format(count)} vectors`);
+      dial.style.setProperty('--fill', `${((log - 4) / 6) * 100}%`);
+      bytesEl.textContent = formatBytes(count * 1536 * 4);
+      const ladderIndex = data.ladder.findIndex(
+        (r) => count >= r.lo && (r.hi === null || count < r.hi),
+      );
+      if (ladderIndex !== rung && ladderIndex >= 0) {
+        rung = ladderIndex;
+        chips.replaceChildren(
+          ...data.ladder[ladderIndex]!.choices.map((name) => {
+            const li = document.createElement('li');
+            li.textContent = name;
+            return li;
+          }),
+        );
+        if (!reduced)
+          gsap.from(chips.children, {
+            opacity: 0,
+            scale: 0.85,
+            duration: 0.35,
+            stagger: 0.04,
+          });
+      }
+      if (!fromTabs) selectTier(tierForCount(count));
+    };
+    dial.addEventListener('input', () => updateDial());
+
+    tabs.forEach((tab, i) => {
+      const go = (): void => {
+        selectTier(i);
+        const target = REPRESENTATIVE[i] ?? 7;
+        if (reduced) {
+          dial.value = String(target);
+          updateDial(true);
+          return;
+        }
+        const state = { v: parseFloat(dial.value) };
+        gsap.to(state, {
+          v: target,
+          duration: 0.8,
+          ease: 'power3.inOut',
+          onUpdate: () => {
+            dial.value = String(state.v);
+            updateDial(true);
+          },
+        });
+      };
+      tab.addEventListener('click', go);
+      tab.addEventListener('keydown', (event) => {
+        const delta =
+          event.key === 'ArrowDown' || event.key === 'ArrowRight'
+            ? 1
+            : event.key === 'ArrowUp' || event.key === 'ArrowLeft'
+              ? -1
+              : 0;
+        if (!delta) return;
+        event.preventDefault();
+        const next = (i + delta + tabs.length) % tabs.length;
+        tabs[next]?.focus();
+        tabs[next]?.click();
+      });
+    });
+
+    selectTier(0, true);
+    dial.value = String(REPRESENTATIVE[0]);
+    updateDial(true);
+
+    // --- lifecycle --------------------------------------------------------------------------
+    if (space) {
+      if (reduced) {
+        space.start(true);
+      } else {
+        ScrollTrigger.create({
+          trigger: section.parentElement ?? section,
+          start: 'top bottom',
+          end: 'bottom top',
+          onToggle: (self) => (self.isActive ? space.start() : space.stop()),
+        });
+        space.start();
+      }
+    }
+    if (!reduced) {
+      gsap.timeline({ delay: 0.15 }).add(liftText('#stacks-title')).from(
+        '.stacks .scene__lede, .stacks__tab, .stacks__goal, .stacks__layers, .stacks .scene__note, .stacks__panel',
+        {
+          autoAlpha: 0,
+          y: 12,
+          duration: 0.8,
+          ease: 'power3.out',
+          stagger: 0.06,
+        },
+        '-=0.75',
+      );
+    }
+  }
+</script>

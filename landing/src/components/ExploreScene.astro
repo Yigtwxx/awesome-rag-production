@@ -1,0 +1,688 @@
+---
+import { catalog, formatDate } from '../lib/catalog';
+import { GROUPS, OTHER_GROUP, uniqueTools } from '../lib/groups';
+
+const tools = uniqueTools();
+const allGroups = [...GROUPS, OTHER_GROUP];
+const months = catalog.growth.map((g) => g.month);
+const monthFmt = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+const monthLabel = (m: string): string =>
+  monthFmt.format(new Date(`${m}-01T00:00:00Z`));
+const categories = [...new Set(tools.map((t) => t.category))];
+
+const payload = {
+  colors: allGroups.map((g) => g.color),
+  months: months.map(monthLabel),
+  tools: tools.map((t) => ({
+    n: t.name,
+    u: t.url,
+    d: t.description,
+    c: t.category,
+    g: allGroups.findIndex((g) => g.id === t.group.id),
+    k: categories.indexOf(t.category),
+    m: t.added ? months.indexOf(t.added) : -1,
+  })),
+};
+const usedGroups = allGroups.filter((g) =>
+  tools.some((t) => t.group.id === g.id),
+);
+const lastMonth = months.length
+  ? monthLabel(months[months.length - 1]!)
+  : formatDate(catalog.generatedAt);
+---
+
+<section class="scene explore" aria-labelledby="explore-title">
+  <canvas class="scene__canvas" aria-hidden="true"></canvas>
+  <div class="scene__labels" aria-hidden="true"></div>
+
+  <div class="scene__layout">
+    <div class="scene__copy">
+      <h1 id="explore-title" class="scene__title">
+        Ask the list.
+        <span class="serif tone-ice">Watch it retrieve.</span>
+      </h1>
+      <p class="scene__lede mono">
+        {tools.length} tools as stars, one spiral arm per pipeline stage. Type a
+        question: a sparse retriever (TF-IDF) runs in your browser and pulls the
+        closest tools into your query.
+      </p>
+
+      <form class="field brackets explore__form" role="search">
+        <label class="visually-hidden" for="explore-query">
+          Search the catalog
+        </label>
+        <span class="mono explore__prompt" aria-hidden="true">
+          query
+        </span>
+        <input
+          id="explore-query"
+          type="search"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="e.g. rerank the top results"
+        />
+      </form>
+      <p class="explore__status mono">
+        Hover a star to read it; click to open the project.
+      </p>
+      <ol class="explore__hits"></ol>
+    </div>
+
+    <p class="scene__note mono">
+      Each star is born in the month its tool joined the README. Drag the
+      timeline to watch the list grow.
+    </p>
+
+    <div class="scene__panel hud explore__panel">
+      <p class="scene__counter">
+        <span class="explore__count">{tools.length}</span>
+        <small>tools</small>
+      </p>
+      <p class="explore__month mono">
+        in <span>{lastMonth}</span>
+      </p>
+      {months.length > 1 && (
+        <div class="explore__timeline scene__rule">
+          <button
+            class="scene-btn brackets explore__play"
+            type="button"
+            aria-label="Replay the list's growth"
+          >
+            <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M5 3.5v9l7-4.5z" fill="currentColor" />
+            </svg>
+          </button>
+          <div class="explore__track">
+            <label class="visually-hidden" for="explore-month">
+              Month
+            </label>
+            <input
+              id="explore-month"
+              class="explore__range"
+              type="range"
+              min="0"
+              max={months.length - 1}
+              step="0.01"
+              value={months.length - 1}
+            />
+            <div class="explore__ends mono" aria-hidden="true">
+              <span>{monthLabel(months[0]!)}</span>
+              <span>{lastMonth}</span>
+            </div>
+          </div>
+        </div>
+      )}
+      <ul class="legend explore__legend">
+        {usedGroups.map((g) => (
+          <li>
+            <i style={`background:${g.color}`} />
+            {g.name}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+
+  <script
+    type="application/json"
+    class="explore__data"
+    set:html={JSON.stringify(payload)}
+  />
+</section>
+
+<style>
+  .explore__form {
+    margin-top: 1.75rem;
+  }
+
+  .explore__prompt {
+    color: var(--ice);
+  }
+
+  .explore__status {
+    margin-top: 0.85rem;
+    color: var(--mist);
+  }
+
+  .explore__hits {
+    display: grid;
+    gap: 0.15rem;
+    max-width: 30rem;
+    margin: 0.6rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .explore__hits :global(li) {
+    display: grid;
+    grid-template-columns: 1.6rem minmax(0, 1fr) 6.5rem;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.42rem 0.5rem;
+    border-radius: 6px;
+    background: rgb(2 4 11 / 0.55);
+    backdrop-filter: blur(6px);
+  }
+
+  .explore__hits :global(.hit-rank) {
+    color: var(--dim);
+    font: 0.72rem var(--font-mono);
+  }
+
+  .explore__hits :global(li:first-child .hit-rank) {
+    color: var(--ice);
+  }
+
+  .explore__hits :global(.hit-name) {
+    overflow: hidden;
+    color: var(--chalk);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .explore__hits :global(.hit-name:hover) {
+    color: var(--ice);
+  }
+
+  .explore__hits :global(.hit-cat) {
+    display: block;
+    overflow: hidden;
+    color: var(--mist);
+    font: 0.68rem var(--font-mono);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .explore__hits :global(.hit-bar) {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--mist);
+    font: 0.68rem var(--font-mono);
+  }
+
+  .explore__hits :global(.hit-bar span) {
+    flex: 1;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--line);
+    overflow: hidden;
+  }
+
+  .explore__hits :global(.hit-bar i) {
+    display: block;
+    height: 100%;
+    background: var(--amber);
+  }
+
+  .explore__hits :global(li:first-child .hit-bar i) {
+    background: var(--ice);
+  }
+
+  .explore__month {
+    margin-top: 0.4rem;
+    color: var(--mist);
+    text-align: right;
+  }
+
+  .explore__month span {
+    color: var(--chalk);
+  }
+
+  .explore__timeline {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .explore__range {
+    width: 100%;
+    height: 1.6rem;
+    margin: 0;
+    background: transparent;
+    appearance: none;
+    cursor: ew-resize;
+  }
+
+  .explore__range::-webkit-slider-runnable-track {
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      var(--sun) var(--fill, 100%),
+      var(--line-strong) var(--fill, 100%)
+    );
+  }
+
+  .explore__range::-moz-range-track {
+    height: 2px;
+    background: var(--line-strong);
+  }
+
+  .explore__range::-moz-range-progress {
+    height: 2px;
+    background: var(--sun);
+  }
+
+  /* Thumb: a slim lit needle instead of a knob. */
+  .explore__range::-webkit-slider-thumb {
+    width: 5px;
+    height: 18px;
+    margin-top: -8px;
+    border: 0;
+    background: var(--sun);
+    box-shadow:
+      0 0 0 3px rgb(2 4 11 / 0.9),
+      0 0 16px rgb(255 209 102 / 0.85);
+    appearance: none;
+  }
+
+  .explore__range::-moz-range-thumb {
+    width: 5px;
+    height: 18px;
+    border: 0;
+    border-radius: 0;
+    background: var(--sun);
+    box-shadow:
+      0 0 0 3px rgb(2 4 11 / 0.9),
+      0 0 16px rgb(255 209 102 / 0.85);
+  }
+
+  .explore__ends {
+    display: flex;
+    justify-content: space-between;
+    color: var(--dim);
+    font-size: 0.7rem;
+  }
+
+  .explore__legend {
+    justify-content: flex-end;
+    margin-top: 1rem;
+  }
+
+  @media (max-width: 60rem) {
+    .explore__month {
+      text-align: left;
+    }
+
+    .explore__legend {
+      justify-content: flex-start;
+    }
+  }
+</style>
+
+<script>
+  import { createGalaxy } from '../lib/galaxy-scene';
+  import { getMotion, liftText } from '../lib/motion';
+  import { buildIndex } from '../lib/search';
+  import { createSpace } from '../lib/space';
+  import { hideTooltip, showTooltip } from '../lib/tooltip';
+
+  interface Payload {
+    colors: string[];
+    months: string[];
+    tools: {
+      n: string;
+      u: string;
+      d: string;
+      c: string;
+      g: number;
+      k: number;
+      m: number;
+    }[];
+  }
+
+  const section = document.querySelector<HTMLElement>('.explore');
+  const dataEl = section?.querySelector<HTMLScriptElement>('.explore__data');
+  const canvas = section?.querySelector<HTMLCanvasElement>('.scene__canvas');
+
+  if (section && dataEl && canvas) {
+    const { gsap, ScrollTrigger, reduced } = getMotion();
+    const data = JSON.parse(dataEl.textContent ?? '{}') as Payload;
+    const input = section.querySelector<HTMLInputElement>('#explore-query')!;
+    const form = section.querySelector<HTMLFormElement>('.explore__form')!;
+    const status = section.querySelector<HTMLElement>('.explore__status')!;
+    const list = section.querySelector<HTMLOListElement>('.explore__hits')!;
+    const labelsEl = section.querySelector<HTMLElement>('.scene__labels')!;
+    const range = section.querySelector<HTMLInputElement>('.explore__range');
+    const play = section.querySelector<HTMLButtonElement>('.explore__play');
+    const countEl = section.querySelector<HTMLElement>('.explore__count')!;
+    const monthEl = section.querySelector<HTMLElement>('.explore__month span')!;
+    const lastMonthIndex = Math.max(0, data.months.length - 1);
+
+    const space = createSpace(canvas, { fov: 38 });
+    const galaxy = space
+      ? createGalaxy(space, {
+          colors: data.colors,
+          tools: data.tools.map((t) => ({
+            group: t.g,
+            category: t.k,
+            added: t.m,
+          })),
+        })
+      : undefined;
+    if (!space) section.classList.add('scene--fallback');
+
+    // Camera looks down onto the disk; the galaxy sits right of the copy.
+    const place = (): void => {
+      if (!space || !galaxy) return;
+      const narrow = window.matchMedia('(max-width: 60rem)').matches;
+      space.camera.position.set(0, narrow ? 2.9 : 2.5, narrow ? 7.4 : 6.1);
+      space.camera.lookAt([0, 0, 0]);
+      galaxy.setLayout(
+        narrow ? 0 : 0.75,
+        narrow ? 1.85 : 0.2,
+        narrow ? 0.85 : 1.12,
+      );
+      space.setFocus(narrow ? 0.5 : 0.64, narrow ? 0.72 : 0.56);
+    };
+    place();
+    window.addEventListener('resize', place);
+
+    // --- growth timeline ---------------------------------------------------------
+    const countAt = (month: number): number =>
+      data.tools.filter((t) => t.m < 0 || t.m <= month + 0.001).length;
+    const setMonth = (value: number): void => {
+      galaxy?.setMonth(value);
+      const whole = Math.floor(value + 0.001);
+      countEl.textContent = String(countAt(whole));
+      monthEl.textContent = data.months[whole] ?? '';
+      if (range) {
+        range.value = String(value);
+        range.style.setProperty(
+          '--fill',
+          `${(value / Math.max(1, lastMonthIndex)) * 100}%`,
+        );
+        range.setAttribute(
+          'aria-valuetext',
+          `${data.months[whole] ?? ''}: ${countAt(whole)} tools`,
+        );
+      }
+    };
+    setMonth(lastMonthIndex);
+
+    let growth: gsap.core.Tween | undefined;
+    const replay = (): void => {
+      growth?.kill();
+      const state = { v: 0 };
+      setMonth(0);
+      growth = gsap.to(state, {
+        v: lastMonthIndex,
+        duration: 6,
+        ease: 'power1.inOut',
+        onUpdate: () => setMonth(state.v),
+      });
+    };
+    range?.addEventListener('input', () => {
+      growth?.kill();
+      setMonth(parseFloat(range.value));
+    });
+    play?.addEventListener('click', replay);
+
+    // --- retrieval ---------------------------------------------------------------
+    const index = buildIndex(
+      data.tools.map((t, id) => ({
+        id,
+        fields: [
+          { text: t.n, weight: 3 },
+          { text: t.c, weight: 1 },
+          { text: t.d, weight: 1 },
+        ],
+      })),
+    );
+    const labels = Array.from({ length: 6 }, (_, i) => {
+      const el = document.createElement('span');
+      el.className = `scene-label${i === 0 ? ' is-top' : ''}`;
+      el.hidden = true;
+      labelsEl.append(el);
+      return el;
+    });
+    let hits: number[] = [];
+    let announce = false;
+
+    let lastKey = '';
+    const render = (query: string): void => {
+      const results = index.search(query, 5);
+      const key = results.map((r) => r.id).join(',');
+      const changed = key !== lastKey;
+      lastKey = key;
+      hits = results.map((r) => r.id);
+      if (changed) galaxy?.setHits(hits);
+      list.replaceChildren();
+      const max = results[0]?.score ?? 1;
+      results.forEach((r, rank) => {
+        const tool = data.tools[r.id]!;
+        const li = document.createElement('li');
+        const num = document.createElement('span');
+        num.className = 'hit-rank';
+        num.textContent = String(rank + 1).padStart(2, '0');
+        const body = document.createElement('span');
+        const link = document.createElement('a');
+        link.className = 'hit-name';
+        link.href = tool.u;
+        link.rel = 'noopener';
+        link.textContent = tool.n;
+        const cat = document.createElement('span');
+        cat.className = 'hit-cat';
+        cat.textContent = tool.c;
+        body.append(link, cat);
+        const bar = document.createElement('span');
+        bar.className = 'hit-bar';
+        const track = document.createElement('span');
+        const fill = document.createElement('i');
+        fill.style.width = `${Math.round((r.score / max) * 100)}%`;
+        track.append(fill);
+        bar.append(track, r.score.toFixed(2));
+        li.append(num, body, bar);
+        list.append(li);
+      });
+      labels.forEach((label, i) => {
+        const id = hits[i];
+        label.hidden = id === undefined;
+        if (id !== undefined) {
+          label.replaceChildren();
+          const b = document.createElement('b');
+          b.textContent = String(i + 1).padStart(2, '0');
+          label.append(b, data.tools[id]!.n);
+        }
+      });
+      // Animate only when the result set changes, not on every keystroke.
+      if (!reduced && results.length && changed) {
+        gsap.from(list.children, {
+          opacity: 0,
+          x: -8,
+          duration: 0.35,
+          stagger: 0.04,
+        });
+      }
+      const q = query.trim();
+      status.setAttribute('aria-live', announce ? 'polite' : 'off');
+      status.textContent = !q
+        ? 'Hover a star to read it; click to open the project.'
+        : results.length
+          ? `${results.length} closest tools for “${q}”, by cosine similarity.`
+          : `Nothing matches “${q}”. Try “reranker”, “pdf” or “tracing”.`;
+    };
+
+    // Labels follow their stars every frame; overlapping ones stack upward.
+    space?.onFrame(() => {
+      if (!galaxy) return;
+      const placed: { x: number; y: number; w: number }[] = [];
+      hits
+        .map((id, i) => ({ i, p: galaxy.toolScreen(id) }))
+        .sort((a, b) => b.p.y - a.p.y)
+        .forEach(({ i, p }) => {
+          const label = labels[i];
+          if (!label) return;
+          const w = label.offsetWidth || 120;
+          let y = p.y - 22;
+          for (const other of placed) {
+            const overlapX = Math.abs(other.x - p.x) < (w + other.w) / 2 + 6;
+            if (overlapX && Math.abs(other.y - y) < 24) y = other.y - 26;
+          }
+          placed.push({ x: p.x, y, w });
+          // A star outside the canvas gets no label; the rest stay fully on screen.
+          const width = space?.width ?? window.innerWidth;
+          const offscreen = p.x < 0 || p.x > width || p.y < 0;
+          const x = Math.min(Math.max(p.x, w / 2 + 12), width - w / 2 - 12);
+          label.style.visibility = p.behind || offscreen ? 'hidden' : 'visible';
+          label.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
+        });
+    });
+
+    // Demo: types example questions until someone takes over.
+    const demoQueries = [
+      'rerank the top results',
+      'parse tables inside pdf files',
+      'self-hosted vector database',
+      'trace llm calls in production',
+      'cache prompts to cut cost',
+    ];
+    let demo: gsap.core.Timeline | undefined;
+    const startDemo = (): void => {
+      if (reduced) {
+        input.value = demoQueries[0]!;
+        render(input.value);
+        return;
+      }
+      demo = gsap.timeline({ repeat: -1, delay: 0.6 });
+      for (const query of demoQueries) {
+        const state = { n: 0 };
+        demo
+          .to(state, {
+            n: query.length,
+            duration: query.length * 0.055,
+            ease: 'none',
+            onUpdate: () => {
+              const next = query.slice(0, Math.round(state.n));
+              if (next !== input.value) {
+                input.value = next;
+                if (next.endsWith(' ') || next === query) render(next);
+              }
+            },
+          })
+          .to({}, { duration: 3.6 })
+          .to(state, {
+            n: 0,
+            duration: 0.4,
+            ease: 'none',
+            onUpdate: () => {
+              input.value = query.slice(0, Math.round(state.n));
+            },
+            onComplete: () => render(''),
+          });
+      }
+    };
+    const stopDemo = (): void => {
+      demo?.kill();
+      demo = undefined;
+      announce = true;
+    };
+    form.addEventListener('submit', (event) => event.preventDefault());
+    input.addEventListener('focus', () => {
+      if (demo) {
+        stopDemo();
+        input.select();
+      }
+    });
+    input.addEventListener('input', () => {
+      stopDemo();
+      render(input.value);
+    });
+
+    // --- hover + click on stars ----------------------------------------------------
+    let hover: number | undefined;
+    const nearest = (event: PointerEvent | MouseEvent): number | undefined => {
+      if (!galaxy || !canvas) return undefined;
+      const target = event.target as Element | null;
+      if (target?.closest('.scene__copy, .scene__panel, .nav'))
+        return undefined;
+      const rect = canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      let best: number | undefined;
+      let bestD = 16 * 16;
+      data.tools.forEach((_, id) => {
+        const p = galaxy.toolScreen(id);
+        if (p.behind) return;
+        const d = (p.x - x) ** 2 + (p.y - y) ** 2;
+        if (d < bestD) {
+          bestD = d;
+          best = id;
+        }
+      });
+      return best;
+    };
+    section.addEventListener('pointermove', (event) => {
+      const id = nearest(event);
+      if (id !== hover) {
+        hover = id;
+        galaxy?.setHover(id);
+        section.style.cursor = id === undefined ? '' : 'pointer';
+      }
+      if (id === undefined) {
+        hideTooltip();
+        return;
+      }
+      const tool = data.tools[id]!;
+      showTooltip(
+        {
+          title: tool.n,
+          swatch: data.colors[tool.g] ?? '#7d8796',
+          lines: [tool.c, tool.d],
+        },
+        event.clientX,
+        event.clientY,
+      );
+    });
+    section.addEventListener('pointerleave', hideTooltip);
+    section.addEventListener('click', (event) => {
+      const id = nearest(event);
+      if (id !== undefined)
+        window.open(data.tools[id]!.u, '_blank', 'noopener');
+    });
+
+    // --- lifecycle + intro -------------------------------------------------------------
+    if (space) {
+      if (reduced) {
+        space.start(true);
+      } else {
+        ScrollTrigger.create({
+          trigger: section.parentElement ?? section,
+          start: 'top bottom',
+          end: 'bottom top',
+          onToggle: (self) => (self.isActive ? space.start() : space.stop()),
+        });
+        space.start();
+      }
+    }
+
+    if (reduced) {
+      startDemo();
+    } else {
+      gsap
+        .timeline({ delay: 0.15 })
+        .add(liftText('#explore-title'))
+        .from(
+          '.explore .scene__lede, .explore__form, .explore__status, .explore .scene__note, .explore__panel',
+          {
+            autoAlpha: 0,
+            y: 12,
+            duration: 0.8,
+            ease: 'power3.out',
+            stagger: 0.07,
+          },
+          '-=0.75',
+        )
+        .add(replay, 0.2)
+        .add(startDemo, 5.4);
+    }
+  }
+</script>

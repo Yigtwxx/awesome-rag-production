@@ -1,0 +1,21 @@
+---
+import EvidenceChapter from '../components/EvidenceChapter.astro';
+import EvidenceScene from '../components/EvidenceScene.astro';
+import Footer from '../components/Footer.astro';
+import Nav from '../components/Nav.astro';
+import Pager from '../components/Pager.astro';
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Evidence and pitfalls | Awesome RAG Production"
+  description="Where every benchmark number in the list comes from, tagged by who measured it, and the most common production RAG failures with their fixes."
+>
+  <Nav current="evidence" />
+  <main id="main">
+    <EvidenceScene />
+    <EvidenceChapter />
+  </main>
+  <Pager current="evidence" />
+  <Footer />
+</Base>

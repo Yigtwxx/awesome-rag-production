@@ -1,0 +1,369 @@
+---
+import { catalog, formatDate } from '../lib/catalog';
+import { getStarCount } from '../lib/github';
+import { PAGES } from '../lib/pages';
+import { REPO_URL, docsHref, href } from '../lib/site';
+
+const stars = await getStarCount();
+const columns = [
+  {
+    title: 'The site',
+    links: PAGES.map((p) => ({ label: p.label, url: href(p.path) })),
+  },
+  {
+    title: 'The list',
+    links: [
+      { label: 'Browse all tools', url: docsHref() },
+      { label: 'Benchmarks', url: docsHref('benchmarks/') },
+      { label: 'RAG pitfalls', url: docsHref('rag-pitfalls/') },
+      { label: 'Datasets', url: docsHref('datasets/') },
+    ],
+  },
+  {
+    title: 'Project',
+    links: [
+      { label: 'Contributing', url: docsHref('CONTRIBUTING/') },
+      { label: 'Roadmap', url: docsHref('ROADMAP/') },
+      { label: 'Changelog', url: docsHref('CHANGELOG/') },
+      { label: 'GitHub', url: REPO_URL },
+    ],
+  },
+];
+
+// A sparse, deterministic starfield painted with one element's box-shadows.
+const starShadows = Array.from({ length: 70 }, (_, i) => {
+  const r = (n: number): number => {
+    const v = Math.sin(i * 12.9898 + n * 78.233) * 43758.5453;
+    return v - Math.floor(v);
+  };
+  const alpha = (0.25 + r(3) * 0.6).toFixed(2);
+  const color =
+    r(5) > 0.85 ? `rgb(255 209 102 / ${alpha})` : `rgb(200 225 255 / ${alpha})`;
+  return `${(r(1) * 100).toFixed(2)}vw ${(r(2) * 520).toFixed(0)}px 0 ${r(4) > 0.9 ? 1 : 0}px ${color}`;
+}).join(', ');
+---
+
+<footer class="footer">
+  <span
+    class="footer__stars"
+    aria-hidden="true"
+    style={`box-shadow:${starShadows}`}
+  ></span>
+
+  <div class="container footer__cta">
+    <p class="footer__statement">
+      Ship RAG that
+      <span class="serif">survives production.</span>
+    </p>
+    <div class="footer__actions">
+      <a class="btn btn--light brackets" href={docsHref()}>
+        Browse the list
+        <span class="btn__arrow" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <path
+              d="M3 8h9m0 0L8.5 4.5M12 8l-3.5 3.5"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></path>
+          </svg>
+        </span>
+      </a>
+      <a class="footer__star" href={REPO_URL}>
+        <span aria-hidden="true">★</span>
+        Star on GitHub
+        {stars !== undefined && <span class="footer__star-count">{stars}</span>}
+      </a>
+    </div>
+  </div>
+
+  <div class="container footer__mid">
+    <p class="footer__about">
+      A curated, evidence-cited list of production RAG tools. Every entry is
+      chosen for production use, and every number carries its source.
+    </p>
+    <nav class="footer__cols" aria-label="Footer">
+      {columns.map((col) => (
+        <div class="footer__col">
+          <p class="footer__col-title mono">{col.title}</p>
+          <ul>
+            {col.links.map((link) => (
+              <li>
+                <a href={link.url}>{link.label}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </nav>
+  </div>
+
+  <div class="footer__stage" aria-hidden="true">
+    <span class="footer__horizon"></span>
+    <p class="footer__wordmark">
+      Awesome RAG <em class="serif">Production</em>
+    </p>
+  </div>
+
+  <div class="container footer__bottom mono">
+    <span>CC0 1.0, dedicated to the public domain</span>
+    <span>
+      Numbers generated from the README on {formatDate(catalog.generatedAt)}
+    </span>
+    <a href="#top" class="footer__top-link">
+      Back to top
+      <svg
+        width="10"
+        height="10"
+        viewBox="0 0 12 12"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path
+          d="M6 10V2m0 0L2.5 5.5M6 2l3.5 3.5"
+          stroke="currentColor"
+          stroke-width="1.4"
+          stroke-linecap="round"
+        ></path>
+      </svg>
+    </a>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding-top: clamp(6rem, 12vw, 9rem);
+  }
+
+  .footer__stars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -2;
+    width: 1px;
+    height: 1px;
+    border-radius: 50%;
+    opacity: 0.8;
+  }
+
+  .footer__cta {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 2rem 4rem;
+    padding-bottom: clamp(3.5rem, 7vw, 5rem);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .footer__statement {
+    font-size: clamp(2.4rem, 5.4vw, 5rem);
+    font-weight: 600;
+    line-height: 0.98;
+    letter-spacing: -0.045em;
+  }
+
+  .footer__statement .serif {
+    display: block;
+    color: var(--ice-hot);
+    font-size: 1.06em;
+  }
+
+  .footer__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  .footer__star {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgb(237 240 245 / 0.8);
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: color 250ms ease;
+  }
+
+  .footer__star > span:first-child {
+    color: var(--sun);
+  }
+
+  .footer__star:hover {
+    color: var(--chalk);
+  }
+
+  .footer__star-count {
+    padding-left: 0.65rem;
+    border-left: 1px solid var(--line-strong);
+    color: var(--mist);
+    font: 500 0.78rem var(--font-mono);
+  }
+
+  .footer__mid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr);
+    gap: 3rem 4rem;
+    padding-top: clamp(3rem, 6vw, 4.5rem);
+  }
+
+  .footer__about {
+    max-width: 22rem;
+    color: var(--mist);
+    font-size: 0.95rem;
+    line-height: 1.65;
+  }
+
+  .footer__cols {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem;
+  }
+
+  .footer__col-title {
+    margin-bottom: 1.1rem;
+    color: var(--dim);
+  }
+
+  .footer__col ul {
+    display: grid;
+    gap: 0.65rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .footer__col a {
+    position: relative;
+    color: rgb(237 240 245 / 0.72);
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: color 250ms ease;
+  }
+
+  .footer__col a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -3px;
+    height: 1px;
+    background: var(--ice);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 400ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .footer__col a:hover {
+    color: var(--chalk);
+  }
+
+  .footer__col a:hover::after {
+    transform: scaleX(1);
+  }
+
+  /* The wordmark rests on a glowing planetary horizon. */
+  .footer__stage {
+    position: relative;
+    margin-top: clamp(4rem, 8vw, 6rem);
+    padding-top: 2rem;
+  }
+
+  .footer__horizon {
+    position: absolute;
+    left: 50%;
+    top: 86%;
+    z-index: -1;
+    width: 360vw;
+    height: 220vw;
+    border-radius: 50%;
+    transform: translateX(-50%);
+    background: radial-gradient(closest-side, #050d24 92%, transparent 100%);
+    box-shadow:
+      0 -1px 0 rgb(127 211 255 / 0.55),
+      0 -10px 40px rgb(127 211 255 / 0.25),
+      0 -60px 140px rgb(64 140 255 / 0.18),
+      0 -2px 30px rgb(255 209 102 / 0.08);
+  }
+
+  .footer__wordmark {
+    margin: 0;
+    padding-inline: var(--gutter);
+    color: rgb(226 236 250 / 0.92);
+    font-size: clamp(2.6rem, 8.1vw, 9.4rem);
+    font-weight: 600;
+    line-height: 0.9;
+    letter-spacing: -0.055em;
+    text-align: center;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-mask-image: linear-gradient(
+      180deg,
+      #000 30%,
+      rgb(0 0 0 / 0.35) 70%,
+      transparent 96%
+    );
+    mask-image: linear-gradient(
+      180deg,
+      #000 30%,
+      rgb(0 0 0 / 0.35) 70%,
+      transparent 96%
+    );
+  }
+
+  .footer__wordmark em {
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+
+  .footer__bottom {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem 2rem;
+    padding-block: 2.8rem 2.4rem;
+    color: var(--dim);
+  }
+
+  .footer__top-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--mist);
+    text-decoration: none;
+    transition: color 250ms ease;
+  }
+
+  .footer__top-link:hover {
+    color: var(--ice-hot);
+  }
+
+  @media (max-width: 60rem) {
+    .footer__cta,
+    .footer__mid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .footer__cols {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    /* Phones: the wordmark stacks into two lines instead of overflowing. */
+    .footer__wordmark {
+      font-size: 13vw;
+      line-height: 0.95;
+      white-space: normal;
+    }
+
+    .footer__wordmark em {
+      display: block;
+    }
+  }
+</style>

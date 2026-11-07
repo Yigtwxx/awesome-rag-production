@@ -1,0 +1,99 @@
+---
+import { nextPage, type PageId } from '../lib/pages';
+import { href } from '../lib/site';
+
+interface Props {
+  current: PageId;
+}
+
+const next = nextPage(Astro.props.current);
+---
+
+<nav class="pager" aria-label="Next section">
+  <a class="pager__link container" href={href(next.path)}>
+    <span class="pager__kicker mono">Next</span>
+    <span class="pager__title">
+      {next.title} <span class="serif">{next.accent}</span>
+    </span>
+    <span class="pager__blurb mono">{next.blurb}</span>
+    <span class="pager__arrow brackets" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 16 16" fill="none">
+        <path
+          d="M3 8h9m0 0L8.5 4.5M12 8l-3.5 3.5"
+          stroke="currentColor"
+          stroke-width="1.4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        ></path>
+      </svg>
+    </span>
+  </a>
+</nav>
+
+<style>
+  .pager {
+    border-top: 1px solid var(--line);
+  }
+
+  .pager__link {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.4rem 2rem;
+    padding-block: clamp(3rem, 7vw, 5rem);
+    text-decoration: none;
+  }
+
+  .pager__kicker {
+    color: var(--mist);
+  }
+
+  .pager__title {
+    grid-column: 1;
+    font-size: clamp(2.2rem, 5vw, 4.2rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .pager__title .serif {
+    color: var(--ice-hot);
+    font-size: 1.05em;
+    transition: color 240ms ease;
+  }
+
+  .pager__blurb {
+    grid-column: 1;
+    color: var(--mist);
+  }
+
+  .pager__arrow {
+    --bracket: rgb(237 240 245 / 0.75);
+    --bracket-inset: -1px;
+    --bracket-size: 10px;
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    align-self: center;
+    display: grid;
+    place-items: center;
+    width: 4.5rem;
+    height: 4.5rem;
+    border: 1px solid var(--line);
+    transition:
+      transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      background-color 300ms ease,
+      color 300ms ease;
+  }
+
+  .pager__link:hover .pager__arrow {
+    --bracket: var(--ice);
+    --bracket-inset: -7px;
+    background: var(--chalk);
+    color: var(--night);
+    transform: translateX(8px);
+  }
+
+  .pager__link:hover .pager__title .serif {
+    color: var(--sun);
+  }
+</style>

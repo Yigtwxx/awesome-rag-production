@@ -1,0 +1,158 @@
+---
+import { catalog } from '../lib/catalog';
+import { toolsByGroup } from '../lib/groups';
+import { href } from '../lib/site';
+
+// The hero's four stages, with what the list offers at each one.
+const byGroup = new Map(toolsByGroup().map((g) => [g.group.id, g]));
+const STAGES = [
+  {
+    name: 'Ingest',
+    groups: ['ingest'],
+    text: 'Parse PDFs, HTML and scans, chunk them well, and version what you index.',
+  },
+  {
+    name: 'Index',
+    groups: ['index'],
+    text: 'Choose and tune an embedding model, then store vectors where they scale.',
+  },
+  {
+    name: 'Retrieve',
+    groups: ['retrieve', 'orchestrate'],
+    text: 'Hybrid search, reranking, query routing and the agent frameworks around them.',
+  },
+  {
+    name: 'Generate',
+    groups: ['serve', 'operate'],
+    text: 'Serve, cache and route models, then evaluate, trace and secure every answer.',
+  },
+];
+const stages = STAGES.map((stage) => {
+  const entries = stage.groups.flatMap((id) => byGroup.get(id)?.tools ?? []);
+  const colors = stage.groups
+    .map((id) => byGroup.get(id)?.group.color)
+    .filter(Boolean);
+  return {
+    ...stage,
+    count: entries.length,
+    sample: entries.slice(0, 6).map((t) => t.name),
+    color: colors[0] ?? '#7d8796',
+  };
+});
+
+const growth = catalog.growth;
+const first = growth[0];
+const last = growth[growth.length - 1];
+const figures = [
+  { value: String(catalog.totals.tools), label: 'production-tested tools' },
+  {
+    value: String(catalog.totals.categories),
+    label: 'categories, parsing to FinOps',
+  },
+  first && last
+    ? {
+        value: `×${(last.tools / Math.max(1, first.tools)).toFixed(1)}`,
+        label: `growth over ${growth.length} months`,
+      }
+    : {
+        value: String(catalog.totals.evidenceClaims),
+        label: 'source-tagged benchmark claims',
+      },
+];
+const pad = (n: number): string => String(n).padStart(2, '0');
+---
+
+<section
+  class="chapter overview-chapter"
+  aria-labelledby="overview-chapter-title"
+>
+  <div class="container">
+    <header class="chapter__head">
+      <h2 id="overview-chapter-title" class="chapter__title">
+        Four stages.
+        <span class="serif tone-ice">One list.</span>
+      </h2>
+      <p class="chapter__lede">
+        The same pipeline the sculpture above walks through, with what the list
+        offers at every step. Each stage opens the matching part of the galaxy.
+      </p>
+    </header>
+
+    <ol class="rows">
+      {stages.map((stage, i) => (
+        <li>
+          <a class="row reveal" href={href('explore/')}>
+            <span class="row__num">{pad(i + 1)}</span>
+            <span class="row__title">
+              <span
+                class="swatch"
+                style={`background:${stage.color};color:${stage.color}`}
+              />
+              {stage.name}
+              <small>{stage.sample.join(', ')}</small>
+            </span>
+            <span class="row__body">{stage.text}</span>
+            <span class="row__aside">
+              {stage.count}
+              <small>tools</small>
+            </span>
+          </a>
+        </li>
+      ))}
+    </ol>
+
+    <dl class="overview-chapter__figures">
+      {figures.map((f) => (
+        <div class="reveal">
+          <dt class="mono">{f.label}</dt>
+          <dd>{f.value}</dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>
+
+<style>
+  .overview-chapter__figures {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem;
+    margin: clamp(4rem, 8vw, 6rem) 0 0;
+  }
+
+  .overview-chapter__figures div {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.6rem;
+  }
+
+  .overview-chapter__figures dt {
+    color: var(--mist);
+  }
+
+  .overview-chapter__figures dd {
+    margin: 0;
+    font: italic 400 clamp(4rem, 9vw, 8rem) / 0.85 var(--font-serif);
+    letter-spacing: -0.03em;
+    color: var(--chalk);
+  }
+
+  .overview-chapter__figures div:nth-child(3) dd {
+    color: var(--sun);
+  }
+
+  @media (max-width: 40rem) {
+    .overview-chapter__figures {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import { fadeSceneUnder, revealOnScroll, revealTitles } from '../lib/motion';
+
+  fadeSceneUnder('.overview-chapter');
+
+  revealTitles('.overview-chapter .chapter__title');
+  revealOnScroll('.overview-chapter .reveal');
+</script>
