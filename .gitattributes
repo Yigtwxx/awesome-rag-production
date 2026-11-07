@@ -6,3 +6,9 @@
 # Workflow and config files are read by Linux tooling too — keep them LF.
 *.yml text eol=lf
 *.yaml text eol=lf
+
+# The landing site is formatted by Prettier, which expects LF. Without this,
+# core.autocrlf=true checks these files out as CRLF on Windows and
+# `npm run check` fails locally even though nothing changed. text=auto lets
+# Git detect binaries (og.png, favicon.ico) and leave them untouched.
+landing/** text=auto eol=lf
