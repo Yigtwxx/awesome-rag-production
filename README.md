@@ -453,7 +453,7 @@ training from scratch. See also: [rag-pitfalls.md — Embedding Model Selection]
 | [RAGatouille](https://github.com/AnswerDotAI/RAGatouille) | Late-interaction ColBERT fine-tuning | When token-level late interaction improves recall vs. single-vector embeddings |
 
 - [sentence-transformers](https://github.com/huggingface/sentence-transformers)
-  <!-- verified: 2026-11-08 -->
+  <!-- verified: 2026-11-07 -->
   - The de-facto Python library for embedding model fine-tuning. Supports
     contrastive, triplet, and GISTEmbed loss functions with native integration
     into Hugging Face Hub. The `SentenceTransformerTrainer` API covers
@@ -534,7 +534,7 @@ when a model change degrades retrieval quality.
 | [Oxen](https://github.com/Oxen-AI/Oxen) | Fast dataset version control | ML dataset iteration with commit history, branching, and large-file support |
 
 - [DVC](https://github.com/treeverse/dvc)
-  <!-- verified: 2026-11-08 -->
+  <!-- verified: 2026-11-07 -->
   - A Git-compatible version control system for datasets, models, and
     experiments. Track your raw documents, generated embeddings, and vector
     index snapshots alongside code; reproduce any prior index state with
@@ -597,7 +597,7 @@ chunk size and overlap, tooling, and how to evaluate chunking on your corpus.
     (`\n\n`, `\n`, or a space) to split at natural boundaries within a target token
     window — robust, fast, no extra dependencies.
 - [semchunk](https://github.com/isaacus-dev/semchunk)
-  <!-- verified: 2026-11-08 -->
+  <!-- verified: 2026-11-07 -->
   - A pure-Python semantic chunking library that requires no embedding model at
     chunk time; it uses statistical sentence boundaries for fast, low-cost semantic
     splitting suitable for large-scale batch indexing.
@@ -635,7 +635,7 @@ zero-shot retrieval performance.
     rerankers outperform bi-encoders by 4+ nDCG@10 points on BEIR
     (\[3P\] [benchmarks.md](benchmarks.md#3-reranking)).
 - [Evoke](https://github.com/Intelligent-Internet/Evoke)
-  <!-- verified: 2026-11-08 -->
+  <!-- verified: 2026-11-07 -->
   - A PostgreSQL index access method (formerly `psql_bm25s`) for exact BM25
     lexical retrieval, with optional Sparse Semantic Retrieval postings stored in
     the same index. It can provide the keyword (or keyword-plus-sparse-semantic)
@@ -1042,7 +1042,7 @@ Groundedness, and Answer Relevance.
     notebook. It also ships adversarial red-teaming and vulnerability scanning,
     covering the security half of RAG evaluation that quality metrics alone miss.
 - [Ragas](https://github.com/vibrantlabsai/ragas)
-  <!-- verified: 2026-11-08 -->
+  <!-- verified: 2026-11-07 -->
   - A framework that uses an "LLM-as-a-Judge" to evaluate your pipeline. It
     calculates metrics like Faithfulness (did the answer come from the context?)
     and Answer Relevance without needing human-labeled ground truth.
@@ -1270,12 +1270,12 @@ different bottleneck — deploying them in combination yields compounding return
     injections, data leakage, and toxic content in real-time. It acts as an
     "Application Firewall" for your LLM.
 - [NeMo Guardrails](https://github.com/NVIDIA-NeMo/Guardrails)
-  <!-- verified: 2026-11-08 -->
+  <!-- verified: 2026-11-07 -->
   - The standard for adding programmable guardrails to LLM-based conversational
     systems. It prevents "Jailbreaking" and ensures models stay on topic,
     critical for enterprise chatbots.
 - [Presidio](https://github.com/data-privacy-stack/presidio)
-  <!-- verified: 2026-11-08 -->
+  <!-- verified: 2026-11-07 -->
   - An open-source SDK, originally built at Microsoft, for PII (Personally
     Identifiable Information) detection and redaction. It ensures sensitive user data (credit cards, emails) is scrubbed
     *before* it hits the embedding model or vector DB.
