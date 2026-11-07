@@ -30,6 +30,11 @@ updates:
     groups:
       landing:
         patterns: ["*"]
+    ignore:
+      # @astrojs/check (latest: 0.9.12) peers on TypeScript ^5 || ^6, so a
+      # TypeScript 7 bump breaks `npm ci`. Remove once the checker accepts 7.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
     labels:
       - "dependencies"
     commit-message:

@@ -2,7 +2,11 @@
 
 > A curated collection of battle-tested tools, frameworks, and best practices for building, scaling, and monitoring production-grade Retrieval-Augmented Generation (RAG) systems.
 
+**Website:** [yigtwxx.github.io/awesome-rag-production](https://yigtwxx.github.io/awesome-rag-production/) —
+search the whole catalog, compare the reference stacks side by side, and browse every source-tagged claim.
+
 [![Awesome](https://awesome.re/badge.svg)](https://github.com/sindresorhus/awesome)
+[![Website](https://img.shields.io/badge/Website-live-7fd3ff?style=flat-square&logo=githubpages&logoColor=white)](https://yigtwxx.github.io/awesome-rag-production/)
 [![License: CC0-1.0](https://img.shields.io/badge/License-CC0_1.0-lightgrey.svg)](https://creativecommons.org/publicdomain/zero/1.0/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
 [![GitHub Stars](https://img.shields.io/github/stars/Yigtwxx/Awesome-RAG-Production?style=flat-square&logo=github&label=Stars)](https://github.com/Yigtwxx/Awesome-RAG-Production/stargazers)
