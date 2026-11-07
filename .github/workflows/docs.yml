@@ -58,6 +58,9 @@ jobs:
 
       - name: Build Docs (mkdocs, served under /docs/)
         run: mkdocs build -f docs-site/mkdocs.yml --verbose
+        env:
+          # Public analytics token; overrides/main.html adds the beacon when set.
+          CF_WEB_ANALYTICS_TOKEN: ${{ vars.CF_WEB_ANALYTICS_TOKEN }}
 
       - name: Set up Node
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
