@@ -24,4 +24,23 @@ purely additive and does not collide with the theme's own head tags.
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js"
   data-cf-beacon='{{ {"token": config.extra.cf_beacon_token, "spa": true} | tojson }}'></script>
 {% endif %}
+
+<style>
+  /* Links in prose need more than colour to stand out (WCAG 1.4.1). A thin,
+     half-transparent underline keeps long lists of links calm. */
+  .md-typeset :is(p, li, td, blockquote) a:not(.md-button):not(.headerlink) {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
+    text-underline-offset: 0.18em;
+  }
+</style>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+  // Material's search panel is role="dialog" without an accessible name.
+  document.querySelector('.md-search[role="dialog"]')?.setAttribute('aria-label', 'Search');
+</script>
 {% endblock %}
