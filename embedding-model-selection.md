@@ -105,7 +105,7 @@ your own labeled query→passage pairs when:
 - You have (or can synthesize via LLM) labeled retrieval pairs.
 
 Fine-tuning consistently beats off-the-shelf for in-domain retrieval without the
-cost of training from scratch. Tooling: [sentence-transformers](https://github.com/UKPLab/sentence-transformers),
+cost of training from scratch. Tooling: [sentence-transformers](https://github.com/huggingface/sentence-transformers),
 [FlagEmbedding](https://github.com/FlagOpen/FlagEmbedding),
 [SetFit](https://github.com/huggingface/setfit) (few-shot). See the full
 [Embedding Fine-tuning section](README.md#embedding-fine-tuning).

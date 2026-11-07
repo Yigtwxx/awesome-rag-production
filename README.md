@@ -305,10 +305,6 @@ Choose the right framework for your use case with this production-focused compar
   - Open-source production-ready RAG infrastructure with built-in agentic
     reasoning, hybrid search, and multimodal support. Designed for scalable
     deployments with automatic citations and enterprise-grade reliability.
-- [Cognita](https://github.com/truefoundry/cognita)
-  - A modular RAG framework by TrueFoundry designed for scalability. It decouples
-    the RAG components (Indexer, Retriever, Parser), allowing for independent
-    scaling and easier AB testing of different RAG strategies.
 - [DSPy](https://github.com/stanfordnlp/dspy)
   - Stanford's framework for programming — rather than prompting — language
     models. Compose RAG pipelines from typed modules and let DSPy's optimizers
@@ -348,10 +344,6 @@ Choose the right framework for your use case with this production-focused compar
   - An end-to-end RAG engine designed for deep document understanding. It handles
     complex layouts (PDFs, tables, images) natively and includes a built-in
     knowledge base management system.
-- [Verba](https://github.com/weaviate/Verba)
-  - Weaviate's "Golden RAGtriever". A fully aesthetic, open-source RAG web
-    application that comes pre-configured with best practices for chunking,
-    embedding, and retrieval out of the box.
 
 ## Data Ingestion & Parsing
 
@@ -454,13 +446,14 @@ training from scratch. See also: [rag-pitfalls.md — Embedding Model Selection]
 
 | Tool | Approach | Best For |
 | :--- | :--- | :--- |
-| [sentence-transformers](https://github.com/UKPLab/sentence-transformers) | Contrastive / triplet / GISTEmbedLoss fine-tuning | General-purpose; widest community and integration support |
+| [sentence-transformers](https://github.com/huggingface/sentence-transformers) | Contrastive / triplet / GISTEmbedLoss fine-tuning | General-purpose; widest community and integration support |
 | [FlagEmbedding](https://github.com/FlagOpen/FlagEmbedding) | BGE-family fine-tuning + LLAMA-based embeddings | BAAI BGE model variants; includes hard-negative mining utilities |
 | [SetFit](https://github.com/huggingface/setfit) | Few-shot contrastive fine-tuning | Low-data regime; strong results with as few as 8 labeled examples per class |
 | [Tevatron](https://github.com/texttron/tevatron) | Dense retrieval training framework (bi-encoder + reranker) | Research-grade pipelines; flexible loss functions and BEIR evaluation |
 | [RAGatouille](https://github.com/AnswerDotAI/RAGatouille) | Late-interaction ColBERT fine-tuning | When token-level late interaction improves recall vs. single-vector embeddings |
 
-- [sentence-transformers](https://github.com/UKPLab/sentence-transformers)
+- [sentence-transformers](https://github.com/huggingface/sentence-transformers)
+  <!-- verified: 2026-11-07 -->
   - The de-facto Python library for embedding model fine-tuning. Supports
     contrastive, triplet, and GISTEmbed loss functions with native integration
     into Hugging Face Hub. The `SentenceTransformerTrainer` API covers
@@ -535,12 +528,13 @@ when a model change degrades retrieval quality.
 
 | Tool | Focus | Best For |
 | :--- | :--- | :--- |
-| [DVC](https://github.com/iterative/dvc) | Dataset & model versioning (Git-like) | Tracking raw data, embeddings, and model artifacts in a Git-compatible workflow |
+| [DVC](https://github.com/treeverse/dvc) | Dataset & model versioning (Git-like) | Tracking raw data, embeddings, and model artifacts in a Git-compatible workflow |
 | [lakeFS](https://github.com/treeverse/lakeFS) | Git-for-data on object storage | Branching and merging large datasets on S3/GCS/Azure — zero-copy snapshots |
 | [Pachyderm](https://github.com/pachyderm/pachyderm) | Data-versioned pipeline orchestration (upstream stalled since 2025) | End-to-end provenance tracking across ingestion → embedding → index pipelines |
 | [Oxen](https://github.com/Oxen-AI/Oxen) | Fast dataset version control | ML dataset iteration with commit history, branching, and large-file support |
 
-- [DVC](https://github.com/iterative/dvc)
+- [DVC](https://github.com/treeverse/dvc)
+  <!-- verified: 2026-11-07 -->
   - A Git-compatible version control system for datasets, models, and
     experiments. Track your raw documents, generated embeddings, and vector
     index snapshots alongside code; reproduce any prior index state with
@@ -558,7 +552,7 @@ when a model change degrades retrieval quality.
     to vector index to LLM response — useful in compliance-heavy domains.
     Listed for reference: upstream has had no commits since early 2025 following
     the HPE acquisition. For new pipelines prefer
-    [lakeFS](https://github.com/treeverse/lakeFS) or [DVC](https://github.com/iterative/dvc).
+    [lakeFS](https://github.com/treeverse/lakeFS) or [DVC](https://github.com/treeverse/dvc).
 - [Oxen](https://github.com/Oxen-AI/Oxen)
   - A fast dataset version control tool optimized for ML workflows. Supports
     branching, commit history, and large-file handling with a CLI that mirrors
@@ -602,7 +596,8 @@ chunk size and overlap, tooling, and how to evaluate chunking on your corpus.
   - The de facto default for general-purpose chunking. Recursively tries separators
     (`\n\n`, `\n`, or a space) to split at natural boundaries within a target token
     window — robust, fast, no extra dependencies.
-- [semchunk](https://github.com/umarbutler/semchunk)
+- [semchunk](https://github.com/isaacus-dev/semchunk)
+  <!-- verified: 2026-11-07 -->
   - A pure-Python semantic chunking library that requires no embedding model at
     chunk time; it uses statistical sentence boundaries for fast, low-cost semantic
     splitting suitable for large-scale batch indexing.
@@ -639,6 +634,12 @@ zero-shot retrieval performance.
     precision with minimal code changes. Independent benchmarks show cross-encoder
     rerankers outperform bi-encoders by 4+ nDCG@10 points on BEIR
     (\[3P\] [benchmarks.md](benchmarks.md#3-reranking)).
+- [Evoke](https://github.com/Intelligent-Internet/Evoke)
+  <!-- verified: 2026-11-07 -->
+  - A PostgreSQL index access method (formerly `psql_bm25s`) for exact BM25
+    lexical retrieval, with optional Sparse Semantic Retrieval postings stored in
+    the same index. It can provide the keyword (or keyword-plus-sparse-semantic)
+    leg of a Postgres-based hybrid RAG stack through one SQL interface.
 - [FlashRank](https://github.com/PrithivirajDamodaran/FlashRank)
   - A lightweight, serverless-friendly reranking library. It runs quantized
     cross-encoder models directly on the CPU (no Torch/GPU required), making it
@@ -649,11 +650,6 @@ zero-shot retrieval performance.
     navigates it by reasoning instead of vector similarity. Useful where
     chunk-and-embed loses structure — regulatory filings, manuals, contracts —
     and where citing the exact section matters more than nearest-neighbour recall.
-- [psql_bm25s](https://github.com/Intelligent-Internet/psql_bm25s)
-  <!-- verified: 2026-06-25 -->
-  - A PostgreSQL extension for BM25-family lexical retrieval with native indexing
-    and SQL top-k query APIs. It can provide the keyword retrieval leg for
-    Postgres-based hybrid RAG stacks.
 - [RAGatouille](https://github.com/AnswerDotAI/RAGatouille)
   <!-- verified: 2026-08-21 -->
   - A library that makes ColBERT (Contextualized Late Interaction over BERT)
@@ -1045,7 +1041,8 @@ Groundedness, and Answer Relevance.
     prompt or model change is gated by assertions instead of eyeballed in a
     notebook. It also ships adversarial red-teaming and vulnerability scanning,
     covering the security half of RAG evaluation that quality metrics alone miss.
-- [Ragas](https://github.com/explodinggradients/ragas)
+- [Ragas](https://github.com/vibrantlabsai/ragas)
+  <!-- verified: 2026-11-07 -->
   - A framework that uses an "LLM-as-a-Judge" to evaluate your pipeline. It
     calculates metrics like Faithfulness (did the answer come from the context?)
     and Answer Relevance without needing human-labeled ground truth.
@@ -1055,13 +1052,6 @@ Groundedness, and Answer Relevance.
     LlamaIndex, and DSPy pipelines with feedback functions that score each
     retrieval-and-generation step, emitting OpenTelemetry traces for both
     development debugging and production monitoring.
-- [Verbatim Citation Gate](https://github.com/Palo-Alto-AI-Research-Lab/verbatim-citation-gate)
-  <!-- verified: 2026-07-28 -->
-  - Catches fabricated citations before the answer reaches the user by first
-    checking, with no LLM call, that every quoted span appears verbatim in the
-    retrieved context, then escalating only the survivors to a burden-of-proof
-    judge. Framework-agnostic, so it drops in front of an existing pipeline
-    rather than replacing its evaluator.
 
 ### LLM-as-Judge Evaluation
 
@@ -1279,17 +1269,15 @@ different bottleneck — deploying them in combination yields compounding return
   - A low-latency security API that protects applications against prompt
     injections, data leakage, and toxic content in real-time. It acts as an
     "Application Firewall" for your LLM.
-- [LLM Guard](https://github.com/protectai/llm-guard)
-  - A comprehensive toolkit for sanitizing inputs and outputs. It detects
-    invisible text, prompt injections, and anonymizes sensitive data, ensuring
-    full compliance with data privacy standards.
-- [NeMo Guardrails](https://github.com/NVIDIA/NeMo-Guardrails)
+- [NeMo Guardrails](https://github.com/NVIDIA-NeMo/Guardrails)
+  <!-- verified: 2026-11-07 -->
   - The standard for adding programmable guardrails to LLM-based conversational
     systems. It prevents "Jailbreaking" and ensures models stay on topic,
     critical for enterprise chatbots.
-- [Presidio](https://github.com/microsoft/presidio)
-  - Microsoft’s SDK for PII (Personally Identifiable Information) detection and
-    redaction. It ensures sensitive user data (credit cards, emails) is scrubbed
+- [Presidio](https://github.com/data-privacy-stack/presidio)
+  <!-- verified: 2026-11-07 -->
+  - An open-source SDK, originally built at Microsoft, for PII (Personally
+    Identifiable Information) detection and redaction. It ensures sensitive user data (credit cards, emails) is scrubbed
     *before* it hits the embedding model or vector DB.
 - [PrivateGPT](https://github.com/zylon-ai/private-gpt)
   - A production-ready project that allows you to run RAG pipelines completely

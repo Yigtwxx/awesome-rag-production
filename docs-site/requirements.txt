@@ -3,4 +3,4 @@
 # The [imaging] extra pulls in cairosvg + pillow, required by the `social` plugin
 # to generate Open Graph / Twitter link-preview card images (needs Cairo system
 # libs in CI — see .github/workflows/docs.yml).
-mkdocs-material[imaging]==9.7.6
+mkdocs-material[imaging]==9.7.7

@@ -2,10 +2,12 @@ version: 2
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"
+    # Monthly, not weekly: actions are SHA-pinned, so routine bumps are hygiene
+    # rather than security fixes, and weekly PRs were mostly noise. Security
+    # alerts still arrive immediately, independent of this schedule.
     schedule:
-      interval: "weekly"
-      day: "monday"
-    # Bundle all action updates into a single weekly PR instead of one per action
+      interval: "monthly"
+    # Bundle all action updates into a single monthly PR instead of one per action
     groups:
       github-actions:
         patterns: ["*"]
@@ -18,6 +20,9 @@ updates:
     directory: "/scripts"
     schedule:
       interval: "monthly"
+    groups:
+      scripts:
+        patterns: ["*"]
     labels:
       - "dependencies"
     commit-message:
