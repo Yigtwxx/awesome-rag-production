@@ -14,7 +14,7 @@
   --panel: rgb(10 29 69 / 0.35);
   --chalk: #edf0f5;
   --mist: #8d97a8; /* 6.9:1 on --night */
-  --dim: #5b6576;
+  --dim: #757f90; /* 5.1:1 on --night, 4.7:1 on navy panels (WCAG AA) */
   --ice: #7fd3ff;
   --ice-hot: #d9f2ff;
   --amber: #f3a53f;
