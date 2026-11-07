@@ -107,6 +107,28 @@ def test_unique_tools_dedupes_cross_listed_entries() -> None:
     assert s.count_unique_tools(categories) == 5
 
 
+@pytest.mark.parametrize(
+    ("url", "name", "expected"),
+    [
+        ("https://github.com/acme/tool/", "Tool", "2025-01"),  # URL is earliest
+        ("https://github.com/new-owner/tool", "TOOL", "2025-03"),  # moved, name only
+        ("https://github.com/moved/tool", "Tool", "2025-03"),  # new URL seen later
+        ("https://github.com/acme/renamed", "Renamed", "2026-11"),  # unseen
+    ],
+)
+def test_first_listed_returns_earliest_month_across_url_and_name(
+    url: str, name: str, expected: str
+) -> None:
+    first_seen = {
+        "https://github.com/acme/tool": "2025-01",
+        "name:tool": "2025-03",
+        "https://github.com/moved/tool": "2026-11",
+    }
+    tool: s.Tool = {"name": name, "url": url, "description": "", "added": None}
+    result = s.first_listed(tool, first_seen, "2026-11")
+    assert result == expected, f"Expected {expected}, got {result}"
+
+
 def test_fenced_headings_do_not_start_sections() -> None:
     titles = [t for t, _ in s.split_sections(README, s.H2_RE)]
     assert "Not A Section" not in titles

@@ -218,6 +218,21 @@ def normalize_url(url: str) -> str:
     return url.rstrip("/").lower()
 
 
+def history_keys(tool: Tool) -> tuple[str, str]:
+    """Keys that match a tool across README revisions: its URL and its name.
+
+    The name key keeps the original month when only the URL changed (a repo
+    that moved to a new owner), instead of dating the entry to the move.
+    """
+    return normalize_url(tool["url"]), f"name:{tool['name'].casefold()}"
+
+
+def first_listed(tool: Tool, first_seen: dict[str, str], default: str) -> str:
+    """Earliest "YYYY-MM" any of the tool's history keys was seen."""
+    months = [first_seen[k] for k in history_keys(tool) if k in first_seen]
+    return min(months, default=default)
+
+
 def clean_text(text: str, limit: int = DESCRIPTION_LIMIT) -> str:
     """Markdown fragment -> plain first sentence, without evidence citations."""
     text = EVIDENCE_MARK_RE.sub(" ", text)
@@ -511,7 +526,8 @@ def growth_history(
             counts[month] = count_unique_tools(revision)
             for category in revision:
                 for tool in category["tools"]:
-                    first_seen.setdefault(normalize_url(tool["url"]), month)
+                    for key in history_keys(tool):
+                        first_seen.setdefault(key, month)
     except (OSError, subprocess.CalledProcessError) as exc:
         print(f"site_stats: git unavailable, growth skipped ({exc})", file=sys.stderr)
         return [], {}
@@ -557,8 +573,7 @@ def build_catalog(
         this_month = today.strftime("%Y-%m")
         for category in categories:
             for tool in category["tools"]:
-                key = normalize_url(tool["url"])
-                tool["added"] = first_seen.get(key, this_month)
+                tool["added"] = first_listed(tool, first_seen, this_month)
     verified_count, verified_latest = parse_verified(readme)
     benchmarks = read("benchmarks.md")
     evidence = parse_evidence(benchmarks)
