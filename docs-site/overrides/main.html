@@ -17,4 +17,11 @@ purely additive and does not collide with the theme's own head tags.
 
 <!-- WebSite + SearchAction structured data lives on the landing page
        (landing/src/layouts/Base.astro), which owns the site root. -->
+
+{% if config.extra.cf_beacon_token %}
+<!-- Cloudflare Web Analytics (cookieless). spa: true counts Material's
+     instant navigation, which uses the History API, as page views. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js"
+  data-cf-beacon='{{ {"token": config.extra.cf_beacon_token, "spa": true} | tojson }}'></script>
+{% endif %}
 {% endblock %}

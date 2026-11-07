@@ -109,6 +109,10 @@ validation:
 extra:
   # Header logo links back to the landing page instead of the docs home.
   homepage: https://yigtwxx.github.io/awesome-rag-production/
+  # Cloudflare Web Analytics token. Public by design (it ships in the page),
+  # read from the CF_WEB_ANALYTICS_TOKEN repo variable at build time. Empty in
+  # local builds, so overrides/main.html renders no beacon.
+  cf_beacon_token: !ENV [CF_WEB_ANALYTICS_TOKEN, ""]
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/Yigtwxx/awesome-rag-production
