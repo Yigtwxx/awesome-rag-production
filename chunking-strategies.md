@@ -67,7 +67,7 @@ model during indexing (slower and more expensive at scale).
 Different document types want different splitters: keep tables intact, split code
 on function boundaries, respect HTML structure. This needs upstream parsing
 (e.g. [Unstructured](https://github.com/Unstructured-IO/unstructured),
-[Marker](https://github.com/VikParuchuri/marker)) but delivers the best recall on
+[Marker](https://github.com/datalab-to/marker)) but delivers the best recall on
 heterogeneous, structured corpora.
 
 ### Hierarchical (small-to-big)
@@ -126,7 +126,7 @@ the section heading or a short document summary *into* each chunk's text
 | [chonkie](https://github.com/feyninc/chonkie) | Token, sentence, recursive, semantic, late | Fast, low-dependency batch indexing |
 | [LangChain RecursiveCharacterTextSplitter](https://python.langchain.com/docs/how_to/recursive_text_splitter/) | Recursive | General-purpose default |
 | [LlamaIndex SemanticSplitterNodeParser](https://docs.llamaindex.ai/en/stable/module_guides/loading/node_parsers/modules/) | Semantic | Coherent chunks for narrative/technical docs |
-| [semchunk](https://github.com/umarbutler/semchunk) | Statistical semantic | Low-cost semantic splitting, no embedder at chunk time |
+| [semchunk](https://github.com/isaacus-dev/semchunk) | Statistical semantic | Low-cost semantic splitting, no embedder at chunk time |
 | [Unstructured](https://github.com/Unstructured-IO/unstructured) | Document-type aware parsing | PDF/DOCX/HTML/image pre-processing upstream of any splitter |
 
 See the [main Chunking section](README.md#chunking--document-processing) for the
@@ -144,7 +144,7 @@ intuition. Build a small golden set (question → expected source chunk) and tra
 - **Context Precision** — how much retrieved text is actually relevant? (Falls
   when chunks are too large.)
 
-Use [Ragas](https://github.com/explodinggradients/ragas) or
+Use [Ragas](https://github.com/vibrantlabsai/ragas) or
 [DeepEval](https://github.com/confident-ai/deepeval) to sweep chunk size,
 overlap, and strategy against these metrics. Re-run the sweep whenever you change
 embedding models — the optimal chunk size shifts with the model's context window

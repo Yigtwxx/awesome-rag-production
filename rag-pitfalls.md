@@ -196,7 +196,8 @@ failed.
 - Fallback to a default response: "I couldn't find relevant information. Try
   rephrasing."
 - Log zero-result queries for later analysis
-- Implement **guardrails** (NeMo, LLM Guard) to catch toxic/off-topic queries
+- Implement **guardrails** (e.g. NeMo Guardrails input rails) to catch
+  toxic/off-topic queries
 
 ---
 
@@ -244,8 +245,9 @@ in responses.
 
 **✅ Solution:**
 
-- Pre-process with `Presidio` (Microsoft) to detect and redact PII
-- Use `LLM Guard` to sanitize outputs before showing to users
+- Pre-process with `Presidio` to detect and redact PII
+- Run output checks (e.g. NeMo Guardrails output rails, or Presidio on the
+  generated text) before showing answers to users
 
 ### ❌ Anti-pattern: Prompt Injection Vulnerability
 

@@ -5,6 +5,47 @@ adapted from [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); as a
 curated list, this repository does not use semantic versions. Planned work is
 tracked in [ROADMAP.md](ROADMAP.md).
 
+## 2026-11
+
+### Added
+
+- A landing site now sits at the site root, with Overview, Explore, Stacks,
+  and Evidence pages generated from this list. The mkdocs list moved to
+  `/docs/`, and old root URLs redirect to it.
+- New entries: XERJ and HelixDB (Vector Databases).
+
+### Removed
+
+- Cognita, Verba, and LLM Guard: all three upstream repositories are archived
+  on GitHub, and the Removal & Deprecation Policy reserves hard removal for
+  archived repos. `rag-pitfalls.md` now points to NeMo Guardrails and Presidio
+  where it named LLM Guard.
+- Verbatim Citation Gate: the repository moved from an organization to a
+  personal account and has 6 stars. It was merged in #73 while the PR checks
+  were bypassed, and it falls below the list's adoption bar.
+
+### Changed
+
+- Updated links for eight repositories that moved or were renamed upstream:
+  Ragas, sentence-transformers, DVC, semchunk, Marker, NeMo Guardrails,
+  Presidio, and psql_bm25s (now **Evoke**, which adds sparse semantic retrieval
+  to the same PostgreSQL index, so its description was rewritten).
+- Dependabot opens grouped monthly PRs for GitHub Actions instead of weekly
+  ones. The actions are SHA-pinned, so the weekly bumps were mostly noise.
+
+## 2026-10
+
+### Removed
+
+- mdgate/converters (Data Ingestion & Parsing): at 3 stars and with no public
+  production user, it fell below the adoption bar applied to later submissions.
+
+## 2026-09
+
+### Added
+
+- New entries: Bifrost (LLM Gateways & Routing), Infino (Vector Databases).
+
 ## 2026-08
 
 ### Added
