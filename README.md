@@ -301,6 +301,12 @@ Choose the right framework for your use case with this production-focused compar
   - Open-source production-ready RAG infrastructure with built-in agentic
     reasoning, hybrid search, and multimodal support. Designed for scalable
     deployments with automatic citations and enterprise-grade reliability.
+- [CompanyBrain](https://github.com/endtoend-ai/Company-Brain)
+  <!-- verified: 2026-11-08 -->
+  - Local-first knowledge workspace that unifies document RAG, GraphRAG over
+    PostgreSQL and Apache AGE, and a page-based knowledge brain, returning the
+    source evidence behind each answer. The GraphRAG module also runs as a stdio
+    MCP server for agent integration.
 - [DSPy](https://github.com/stanfordnlp/dspy)
   - Stanford's framework for programming — rather than prompting — language
     models. Compose RAG pipelines from typed modules and let DSPy's optimizers
