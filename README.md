@@ -592,6 +592,11 @@ chunk size and overlap, tooling, and how to evaluate chunking on your corpus.
   - The de facto default for general-purpose chunking. Recursively tries separators
     (`\n\n`, `\n`, or a space) to split at natural boundaries within a target token
     window — robust, fast, no extra dependencies.
+- [md-chunk-lite](https://github.com/tidybytetools/md-chunk-lite)
+  <!-- verified: 2026-11-10 -->
+  - A local Python CLI and MCP server that splits Markdown into chunks by heading.
+    Each chunk keeps its heading path and line numbers so an agent can find and read it.
+    Useful for already structured docs. It does not do semantic or token-window splitting.
 - [semchunk](https://github.com/isaacus-dev/semchunk)
   <!-- verified: 2026-11-07 -->
   - A pure-Python semantic chunking library that requires no embedding model at
