@@ -297,6 +297,11 @@ Choose the right framework for your use case with this production-focused compar
 
 ### Frameworks
 
+- [Agent Store](https://github.com/Bensonluo/rag_chatbot)
+  - Open-source transactional shopping and customer-service agent: a LangGraph
+    dialogue engine over hybrid RAG (vector + BM25 + RRF, optional GraphRAG),
+    with confirmation-gated ordering, graceful human handoff, and an MCP server
+    exposing the commerce tools. Live demo at benluo.art/projects/rag-chatbot.
 - [Agentset](https://github.com/agentset-ai/agentset)
   - Open-source production-ready RAG infrastructure with built-in agentic
     reasoning, hybrid search, and multimodal support. Designed for scalable
