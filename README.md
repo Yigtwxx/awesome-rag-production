@@ -653,6 +653,12 @@ zero-shot retrieval performance.
     superior retrieval quality compared to standard single-vector dense
     retrieval. Upstream has been quiet since mid-2025 — pin your version and
     check compatibility before adopting it in a new pipeline.
+- [Ragmir](https://github.com/jcode-works/jcode-ragmir)
+  - A local hybrid BM25 and vector retrieval library for Node.js with a CLI and
+    a stdio MCP server. It cites source lines, PDF pages, slides, and sheet
+    cells, returns nothing for off-topic questions instead of noise, and ships a
+    golden-set evaluator with hard negatives to measure retrieval before
+    production. Runs offline by default.
 
 **GraphRAG:**
 
