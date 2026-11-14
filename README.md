@@ -356,6 +356,9 @@ Choose the right framework for your use case with this production-focused compar
     frameworks.
 - [Firecrawl](https://github.com/firecrawl/firecrawl)
   - Effortlessly turn websites into clean, LLM-ready markdown.
+- [Huntsman](https://github.com/TulipFarm/huntsman)
+  <!-- verified: 2026-11-14 -->
+  - Self-hosted Go web scraper that turns pages into clean Markdown for RAG ingestion behind a Firecrawl-compatible API, scraping 4× as many pages per second as Firecrawl on the same 8-vCPU machine.
 - [LlamaParse](https://github.com/run-llama/llama_cloud_services)
   - Specialized parsing for complex PDFs with table extraction capabilities.
 - [Marker](https://github.com/datalab-to/marker)
