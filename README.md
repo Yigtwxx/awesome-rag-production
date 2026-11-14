@@ -842,6 +842,12 @@ distinct from the RAG knowledge base itself.
 
 ### Frameworks & Tools
 
+- [ClickHouse Loom](https://github.com/ClickHouse/loom)
+  <!-- verified: 2026-11-12 -->
+  - Self-hosted MCP server and HTTP API that keeps agents' long-term memory,
+    documents and code index in ClickHouse, with version history, conflict
+    review, audit rows and erasure. One search call spans memory, documents
+    and past conversations, cites its sources and can abstain.
 - [LangMem](https://github.com/langchain-ai/langmem)
   - LangChain's native memory SDK for building agents with persistent, long-term
     memory. Integrates directly with LangGraph state and LangSmith tracing,
