@@ -356,6 +356,14 @@ Choose the right framework for your use case with this production-focused compar
     frameworks.
 - [Firecrawl](https://github.com/firecrawl/firecrawl)
   - Effortlessly turn websites into clean, LLM-ready markdown.
+- [GetYouTubeTranscript](https://github.com/tubeagentkit/youtube-transcript-api-python)
+  <!-- verified: 2026-11-14 -->
+  - MIT Python SDK for a hosted YouTube transcript API: pulls a video's
+    captions as text with optional per-line timestamps, lists caption
+    languages, and enumerates channel and playlist videos, so YouTube talks,
+    lectures and podcasts can be chunked and indexed without running a
+    scraper. The API is a paid service with a free account tier; videos
+    without captions return nothing.
 - [LlamaParse](https://github.com/run-llama/llama_cloud_services)
   - Specialized parsing for complex PDFs with table extraction capabilities.
 - [Marker](https://github.com/datalab-to/marker)
