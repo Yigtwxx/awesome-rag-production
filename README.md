@@ -388,6 +388,9 @@ Choose the right framework for your use case with this production-focused compar
     with optional local VLM/LLM review to turn forms, flowcharts, tables, and
     screenshot-heavy manuals into semantic Markdown, structured chunks, source
     maps, and split documents for RAG ingestion.
+- [SpecStream](https://specstream.ai)
+  <!-- verified: 2026-11-18 -->
+  - Live web data engine with search and extraction APIs, providing drop-in compatibility for Tavily, Exa, Brave, Serper, and SearXNG requests on a single endpoint.
 - [Unstructured](https://github.com/Unstructured-IO/unstructured)
   - Open-source pipelines for preprocessing complex, unstructured data.
 
