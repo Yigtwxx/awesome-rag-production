@@ -301,6 +301,12 @@ Choose the right framework for your use case with this production-focused compar
   - Open-source production-ready RAG infrastructure with built-in agentic
     reasoning, hybrid search, and multimodal support. Designed for scalable
     deployments with automatic citations and enterprise-grade reliability.
+- [ApeRAG](https://github.com/apecloud/ApeRAG)
+  <!-- verified: 2026-11-22 -->
+  - Open-source (Apache-2.0) hybrid RAG and GraphRAG platform combining vector,
+    full-text, entity-normalized knowledge graph, summary, and vision indexing
+    with optional MinerU parsing, built-in MCP server, and Kubernetes/Helm
+    deployment.
 - [DSPy](https://github.com/stanfordnlp/dspy)
   - Stanford's framework for programming — rather than prompting — language
     models. Compose RAG pipelines from typed modules and let DSPy's optimizers
