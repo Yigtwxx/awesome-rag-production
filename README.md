@@ -1030,6 +1030,12 @@ Groundedness, and Answer Relevance.
   - The "Pytest for LLMs". It offers a unit-testing framework for RAG,
     integrating seamlessly into CI/CD pipelines to catch regressions in retrieval
     quality or hallucination rates before deployment.
+- [EvalShift](https://github.com/evalshift/evalshift-cli)
+  <!-- verified: 2026-11-22 -->
+  - Regression testing for swapping the generator model behind a RAG app. It
+    replays the same queries, or recorded production runs, on the current and
+    the candidate model and reports which answers changed, with paired
+    statistics and a CI gate.
 - [KB Arena](https://github.com/xmpuspus/kb-arena)
   <!-- verified: 2026-06-25 -->
   - Benchmarks 9 retrieval architectures (naive vector, contextual vector, QnA
