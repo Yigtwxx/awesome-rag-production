@@ -356,6 +356,8 @@ Choose the right framework for your use case with this production-focused compar
     frameworks.
 - [Firecrawl](https://github.com/firecrawl/firecrawl)
   - Effortlessly turn websites into clean, LLM-ready markdown.
+- [FlashData MCP](https://github.com/flashdatadev/flashdata-mcp)
+  - Managed Google Search API (Web, News, Images, Shopping, Videos, Places) and timestamped YouTube transcript/metadata ingestion returning clean, RAG-ready structured JSON via REST API or hosted Streamable HTTP Remote MCP (`https://data.flashdata.dev/mcp`); free trial with no credit card required.
 - [LlamaParse](https://github.com/run-llama/llama_cloud_services)
   - Specialized parsing for complex PDFs with table extraction capabilities.
 - [Marker](https://github.com/datalab-to/marker)
