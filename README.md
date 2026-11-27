@@ -390,6 +390,9 @@ Choose the right framework for your use case with this production-focused compar
     maps, and split documents for RAG ingestion.
 - [Unstructured](https://github.com/Unstructured-IO/unstructured)
   - Open-source pipelines for preprocessing complex, unstructured data.
+- [URL to Markdown](https://apify.com/publicrecords/url-to-markdown)
+  <!-- verified: 2026-11-27 -->
+  - Hosted Apify Actor that converts a web page into LLM-ready Markdown for RAG ingestion, also reachable as an MCP tool through Apify MCP with your own Apify account.
 
 ## Embedding Models
 
